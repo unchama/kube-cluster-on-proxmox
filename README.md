@@ -25,6 +25,11 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
 # cleanup
 
 ```
+# stop vm
+qm stop 1001
+qm stop 1002
+qm stop 1003
+# delete vm
 qm destroy 9050 --destroy-unreferenced-disks true --purge true
 qm destroy 1001 --destroy-unreferenced-disks true --purge true
 qm destroy 1002 --destroy-unreferenced-disks true --purge true
