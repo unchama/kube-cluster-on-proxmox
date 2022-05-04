@@ -1,14 +1,14 @@
 version: 1
 config:
-    - type: physical
-      name: eth0
-      subnets:
-      - type: static
-        address: '172.16.3.11'
-        netmask: '255.255.240.0'
-        gateway: '172.16.15.254'
-    - type: nameserver
-      address:
-      - '172.16.15.254'
-      search:
-      - 'local'
+  - type: physical
+    name: eth0
+    subnets:
+    - type: static
+      address: '172.16.3.11'
+      netmask: '255.255.240.0'
+      gateway: '172.16.15.254'
+  - type: nameserver
+    address:
+    - '172.16.15.254'
+    search:
+    - 'local'
