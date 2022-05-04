@@ -19,3 +19,5 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
 # 作成フロー
 
 - proxmoxのホストコンソール上で`deploy-vm.sh`を実行すると、各種VMが沸く
+
+  `/bin/bash <(curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/deploy-vm.sh)`
