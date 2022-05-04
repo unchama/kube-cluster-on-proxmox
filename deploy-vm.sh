@@ -63,4 +63,8 @@ curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/s
 curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/snippets/unc-k8s-cp-3-network.yaml > /var/lib/vz/snippets/unc-k8s-cp-3-network.yaml
 qm set 1003 --cicustom "user=local:snippets/unc-k8s-cp-3-user.yaml,network=local:snippets/unc-k8s-cp-3-network.yaml"
 
+qm start 1001
+qm start 1002
+qm start 1003
+
 # end region
