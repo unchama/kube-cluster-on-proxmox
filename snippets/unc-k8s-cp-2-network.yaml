@@ -1,7 +1,7 @@
 version: 1
 config:
   - type: physical
-    name: eth0
+    name: ens18
     subnets:
     - type: static
       address: '172.16.3.12'
