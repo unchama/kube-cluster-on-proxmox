@@ -1,0 +1,8 @@
+#cloud-config
+hostname: unc-k8s-cp-3
+manage_etc_hosts: true
+chpasswd:
+  expire: False
+users:
+  - default
+package_upgrade: true
