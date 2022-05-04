@@ -15,14 +15,14 @@ BOOT_IMAGE_TARGET_VOLUME=tst-network-01-lun01
 
 # region01 : create-template
 
-# download the image
-wget https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img
+# download the image(ubuntu 20.04 LTS)
+wget https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
 
 # create a new VM and attach Network Adaptor
 qm create $TEMPLATE_VMID --memory 2048 --net0 virtio,bridge=vmbr0
 
 # import the downloaded disk to $BOOT_IMAGE_TARGET_VOLUME storage
-qm importdisk $TEMPLATE_VMID bionic-server-cloudimg-amd64.img $BOOT_IMAGE_TARGET_VOLUME
+qm importdisk $TEMPLATE_VMID focal-server-cloudimg-amd64.img $BOOT_IMAGE_TARGET_VOLUME
 
 # finally attach the new disk to the VM as scsi drive
 qm set $TEMPLATE_VMID --scsihw virtio-scsi-pci --scsi0 $BOOT_IMAGE_TARGET_VOLUME:vm-$TEMPLATE_VMID-disk-0
@@ -40,7 +40,7 @@ qm set $TEMPLATE_VMID --serial0 socket --vga serial0
 qm template $TEMPLATE_VMID
 
 # cleanup
-rm bionic-server-cloudimg-amd64.img
+rm focal-server-cloudimg-amd64.img
 
 # end region
 
