@@ -21,3 +21,12 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
 - proxmoxのホストコンソール上で`deploy-vm.sh`を実行すると、各種VMが沸く
 
   `/bin/bash <(curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/deploy-vm.sh)`
+
+# cleanup
+
+```
+qm destroy 9050 --destroy-unreferenced-disks true --purge true
+qm destroy 1001 --destroy-unreferenced-disks true --purge true
+qm destroy 1002 --destroy-unreferenced-disks true --purge true
+qm destroy 1003 --destroy-unreferenced-disks true --purge true
+```
