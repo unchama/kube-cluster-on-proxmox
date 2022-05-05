@@ -10,11 +10,12 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
   - Storage Network Segment (172.16.16.0/22)
   - kubernetes
     - Internal
-      - Pod Network ()
-      - Service Network ()
+      - Pod Network (10.128.0.0/16)
+      - Service Network (10.96.0.0/16)
     - External
-      - Node IP(172.16.3.0/24)
-      - API Endpoint(172.16.3.100/24)
+      - Node IP (172.16.3.0/24)
+      - API Endpoint (172.16.3.100/24)
+      - NodeBalancer VIP ()
 
 # 作成フロー
 
