@@ -49,6 +49,18 @@ Host unc-k8s-cp-3
   User cloudinit
   IdentityFile ~/.ssh/id_ed25519
   ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+
+Host unc-k8s-wk-1
+  HostName 172.16.3.21
+  User cloudinit
+  IdentityFile ~/.ssh/id_ed25519
+  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+
+Host unc-k8s-wk-2
+  HostName 172.16.3.22
+  User cloudinit
+  IdentityFile ~/.ssh/id_ed25519
+  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
 ```
 
 - ローカル端末上でコマンド実行
@@ -62,6 +74,15 @@ scp ./join_kubeadm_cp.yaml unc-k8s-cp-3:~/
 # nc-k8s-cp-2 と unc-k8s-cp-3 で kubeadm join
 ssh unc-k8s-cp-2 "sudo kubeadm join --config ~/join_kubeadm_cp.yaml"
 ssh unc-k8s-cp-3 "sudo kubeadm join --config ~/join_kubeadm_cp.yaml"
+
+# join_kubeadm_wk.yaml を unc-k8s-wk-1 と unc-k8s-wk-2 にコピー
+scp unc-k8s-cp-1:~/join_kubeadm_wk.yaml ./
+scp ./join_kubeadm_wk.yaml unc-k8s-wk-1:~/
+scp ./join_kubeadm_wk.yaml unc-k8s-wk-2:~/
+
+# nc-k8s-wk-1 と unc-k8s-wk-2 で kubeadm join
+ssh unc-k8s-wk-1 "sudo kubeadm join --config ~/join_kubeadm_wk.yaml"
+ssh unc-k8s-wk-2 "sudo kubeadm join --config ~/join_kubeadm_wk.yaml"
 ```
 
 # cleanup
