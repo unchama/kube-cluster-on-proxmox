@@ -23,6 +23,47 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
 
   `/bin/bash <(curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/deploy-vm.sh)`
 
+- ローカル端末上で`~/.ssh/config`をセットアップ
+
+```
+Host <踏み台サーバーホスト名>
+  HostName <踏み台サーバーホスト名>
+  ProxyCommand cloudflared access ssh --hostname %h
+  User <踏み台サーバーユーザー名>
+  IdentityFile ~/.ssh/id_ed25519
+
+Host unc-k8s-cp-1
+  HostName 172.16.3.11
+  User cloudinit
+  IdentityFile ~/.ssh/id_ed25519
+  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+
+Host unc-k8s-cp-2
+  HostName 172.16.3.12
+  User cloudinit
+  IdentityFile ~/.ssh/id_ed25519
+  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+
+Host unc-k8s-cp-3
+  HostName 172.16.3.13
+  User cloudinit
+  IdentityFile ~/.ssh/id_ed25519
+  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+```
+
+- ローカル端末上でコマンド実行
+
+```
+# join_kubeadm_cp.yaml を unc-k8s-cp-2 と unc-k8s-cp-3 にコピー
+scp unc-k8s-cp-1:~/join_kubeadm_cp.yaml ./
+scp ./join_kubeadm_cp.yaml unc-k8s-cp-2:~/
+scp ./join_kubeadm_cp.yaml unc-k8s-cp-3:~/
+
+# nc-k8s-cp-2 と unc-k8s-cp-3 で kubeadm join
+ssh unc-k8s-cp-2 "sudo kubeadm join --config ~/join_kubeadm_cp.yaml"
+ssh unc-k8s-cp-3 "sudo kubeadm join --config ~/join_kubeadm_cp.yaml"
+```
+
 # cleanup
 
 ```
