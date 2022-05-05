@@ -191,8 +191,8 @@ vrrp_script chk_haproxy {
 # Configuration for Virtual Interface
 vrrp_instance LB_VIP {
     interface ens18
-    state MASTER        # set to BACKUP on the peer machine
-    priority 101        # set to  99 on the peer machine
+    state ${KEEPALIVED_STATE}
+    priority ${KEEPALIVED_PRIORITY}
     virtual_router_id 51
 
     smtp_alert          # Enable Notifications Via Email
