@@ -92,9 +92,13 @@ ssh unc-k8s-wk-2 "sudo kubeadm join --config ~/join_kubeadm_wk.yaml"
 qm stop 1001
 qm stop 1002
 qm stop 1003
+qm stop 1101
+qm stop 1102
 # delete vm
 qm destroy 9050 --destroy-unreferenced-disks true --purge true
 qm destroy 1001 --destroy-unreferenced-disks true --purge true
 qm destroy 1002 --destroy-unreferenced-disks true --purge true
 qm destroy 1003 --destroy-unreferenced-disks true --purge true
+qm destroy 1101 --destroy-unreferenced-disks true --purge true
+qm destroy 1102 --destroy-unreferenced-disks true --purge true
 ```
