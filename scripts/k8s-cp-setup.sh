@@ -284,6 +284,18 @@ helm install cilium cilium/cilium \
     --set k8sServiceHost=${KUBE_API_SERVER_VIP} \
     --set k8sServicePort=6443
 
+# Install MetalLB Helm Chart
+cat > $HOME/metallb_values.yaml <<EOF
+configInline:
+  address-pools:
+   - name: default
+     protocol: layer2
+     addresses:
+     - 172.16.3.128/25
+EOF
+helm repo add metallb https://metallb.github.io/metallb
+helm install metallb metallb/metallb -f $HOME/metallb_values.yaml
+
 # Generate control plane certificate
 KUBEADM_UPLOADED_CERTS=$(kubeadm init phase upload-certs --upload-certs | tail -n 1)
 
