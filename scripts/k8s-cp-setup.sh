@@ -31,8 +31,8 @@ case $1 in
 esac
 
 # Set global variables
-KUBE_API_SERVER_VIP=172.16.10.100
-NODE_IPS=( 172.16.10.11 172.16.10.12 172.16.10.13 )
+KUBE_API_SERVER_VIP=172.16.3.100
+NODE_IPS=( 172.16.3.11 172.16.3.12 172.16.3.13 )
 
 # set per-node variables
 case $1 in
