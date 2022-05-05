@@ -85,6 +85,12 @@ ssh unc-k8s-wk-1 "sudo kubeadm join --config ~/join_kubeadm_wk.yaml"
 ssh unc-k8s-wk-2 "sudo kubeadm join --config ~/join_kubeadm_wk.yaml"
 ```
 
+- 軽い動作チェック
+
+```
+ssh unc-k8s-cp-1 "kubectl get node && kubectl get pod -A"
+```
+
 # cleanup
 
 ```
