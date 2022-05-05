@@ -58,11 +58,11 @@ esac
 
 
 # Install HAProxy
-sudo apt-get install -y --no-install-recommends software-properties-common
-sudo add-apt-repository ppa:vbernat/haproxy-2.4 -y
+apt-get install -y --no-install-recommends software-properties-common
+add-apt-repository ppa:vbernat/haproxy-2.4 -y
 sudo apt-get install -y haproxy=2.4.\*
 
-sudo cat > /etc/haproxy/haproxy.cfg <<EOF
+cat > /etc/haproxy/haproxy.cfg <<EOF
 global
     log /dev/log    local0
     log /dev/log    local1 notice
@@ -105,12 +105,12 @@ backend k8s-api
 EOF
 
 # Install Keepalived
-sudo echo "net.ipv4.ip_nonlocal_bind = 1" >> /etc/sysctl.conf
-sudo sysctl -p
+echo "net.ipv4.ip_nonlocal_bind = 1" >> /etc/sysctl.conf
+sysctl -p
 
-sudo apt-get update && apt-get -y install keepalived
+apt-get update && apt-get -y install keepalived
 
-sudo cat > /etc/keepalived/keepalived.conf <<EOF
+cat > /etc/keepalived/keepalived.conf <<EOF
 # Define the script used to check if haproxy is still working
 vrrp_script chk_haproxy { 
     script "/usr/bin/killall -0 haproxy"
@@ -150,11 +150,11 @@ vrrp_instance LB_VIP {
 EOF
 
 # Enable VIP services
-sudo systemctl enable keepalived --now
-sudo systemctl enable haproxy --now
+systemctl enable keepalived --now
+systemctl enable haproxy --now
 
 # Install Containerd
-sudo cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
 overlay
 br_netfilter
 EOF
@@ -163,7 +163,7 @@ sudo modprobe overlay
 sudo modprobe br_netfilter
 
 # Setup required sysctl params, these persist across reboots.
-sudo cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
 net.bridge.bridge-nf-call-iptables  = 1
 net.ipv4.ip_forward                 = 1
 net.bridge.bridge-nf-call-ip6tables = 1
@@ -180,15 +180,15 @@ sudo mkdir -p /etc/containerd
 sudo containerd config default > /etc/containerd/config.toml
 
 if grep -q "SystemdCgroup = true" "/etc/containerd/config.toml"; then
-    echo "Config found, skip rewriting..."
+echo "Config found, skip rewriting..."
 else
-    sudo sed -i -e "s/SystemdCgroup \= false/SystemdCgroup \= true/g" /etc/containerd/config.toml
+sed -i -e "s/SystemdCgroup \= false/SystemdCgroup \= true/g" /etc/containerd/config.toml
 fi
 
 sudo systemctl restart containerd
 
 # Modify kernel parameters for Kubernetes
-sudo cat <<EOF | tee /etc/sysctl.d/k8s.conf
+cat <<EOF | tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 vm.overcommit_memory = 1
@@ -198,20 +198,20 @@ kernel.panic_on_oops = 1
 kernel.keys.root_maxkeys = 1000000
 kernel.keys.root_maxbytes = 25000000
 EOF
-sudo sysctl --system
+sysctl --system
 
 # Install kubeadm
-sudo apt-get update && apt-get install -y apt-transport-https curl gnupg2
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+apt-get update && apt-get install -y apt-transport-https curl gnupg2
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 cat <<EOF | tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
-sudo apt-get update
-sudo apt-get install -y kubelet=1.23.6-00 kubeadm=1.23.6-00 kubectl=1.23.6-00
-sudo apt-mark hold kubelet kubeadm kubectl
+apt-get update
+apt-get install -y kubelet=1.23.6-00 kubeadm=1.23.6-00 kubectl=1.23.6-00
+apt-mark hold kubelet kubeadm kubectl
 
 # Disable swap
-sudo swapoff -a
+swapoff -a
 
 # Ends except first-control-plane
 case $1 in
@@ -255,10 +255,10 @@ protectKernelDefaults: true
 EOF
 
 # Pull images first
-sudo kubeadm config images pull
+kubeadm config images pull
 
 # Install Kubernetes without kube-proxy
-sudo kubeadm init --config $HOME/init_kubeadm.yaml --skip-phases=addon/kube-proxy --ignore-preflight-errors=NumCPU,Mem
+kubeadm init --config $HOME/init_kubeadm.yaml --skip-phases=addon/kube-proxy --ignore-preflight-errors=NumCPU,Mem
 
 mkdir -p $HOME/.kube
 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
