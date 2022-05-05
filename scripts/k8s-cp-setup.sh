@@ -120,7 +120,7 @@ vrrp_script chk_haproxy {
 
 # Configuration for Virtual Interface
 vrrp_instance LB_VIP {
-    interface eth0
+    interface ens18
     state MASTER        # set to BACKUP on the peer machine
     priority 101        # set to  99 on the peer machine
     virtual_router_id 51
