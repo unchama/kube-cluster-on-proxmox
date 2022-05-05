@@ -3,19 +3,19 @@
 # special thanks!: https://gist.github.com/inductor/32116c486095e5dde886b55ff6e568c8
 
 function usage() {
-	echo "usage> k8s-cpp-setup.sh [COMMAND]"
-	echo "[COMMAND]:"
-	echo "  k8s-cp-1    run setup script for k8s-cp-1"
-	echo "  k8s-cp-2    run setup script for k8s-cp-2"
-	echo "  k8s-cp-3    run setup script for k8s-cp-3"
+    echo "usage> k8s-cpp-setup.sh [COMMAND]"
+    echo "[COMMAND]:"
+    echo "  k8s-cp-1    run setup script for k8s-cp-1"
+    echo "  k8s-cp-2    run setup script for k8s-cp-2"
+    echo "  k8s-cp-3    run setup script for k8s-cp-3"
 }
 
 case $1 in
-	"help")
+    "help")
         usage
         exit 255
         ;;
-	"k8s-cp-1")
+    "k8s-cp-1")
         break
         ;;
     "k8s-cp-2")
@@ -36,7 +36,7 @@ NODE_IPS=( 172.16.3.11 172.16.3.12 172.16.3.13 )
 
 # set per-node variables
 case $1 in
-	"k8s-cp-1")
+    "k8s-cp-1")
         KEEPALIVED_STATE=MASTER
         KEEPALIVED_PRIORITY=101
         KEEPALIVED_UNICAST_SRC_IP=${NODE_IPS[0]}
@@ -215,7 +215,7 @@ swapoff -a
 
 # Ends except first-control-plane
 case $1 in
-	"k8s-cp-1")
+    "k8s-cp-1")
         break
         ;;
     "k8s-cp-2")
