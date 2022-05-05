@@ -48,21 +48,34 @@ rm focal-server-cloudimg-amd64.img
 
 # region02 : create vm from template
 
+# clone from template
 qm clone $TEMPLATE_VMID 1001 --name unc-k8s-cp-1 --full true
+# resize disk (Resize after cloning, because it takes time to clone a large disk)
+qm resize 1001 scsi0 30G
+# set snippets
 curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/snippets/unc-k8s-cp-1-user.yaml > /var/lib/vz/snippets/unc-k8s-cp-1-user.yaml
 curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/snippets/unc-k8s-cp-1-network.yaml > /var/lib/vz/snippets/unc-k8s-cp-1-network.yaml
 qm set 1001 --cicustom "user=local:snippets/unc-k8s-cp-1-user.yaml,network=local:snippets/unc-k8s-cp-1-network.yaml"
 
+# clone from template
 qm clone $TEMPLATE_VMID 1002 --name unc-k8s-cp-2 --full true
+# resize disk (Resize after cloning, because it takes time to clone a large disk)
+qm resize 1002 scsi0 30G
+# set snippets
 curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/snippets/unc-k8s-cp-2-user.yaml > /var/lib/vz/snippets/unc-k8s-cp-2-user.yaml
 curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/snippets/unc-k8s-cp-2-network.yaml > /var/lib/vz/snippets/unc-k8s-cp-2-network.yaml
 qm set 1002 --cicustom "user=local:snippets/unc-k8s-cp-2-user.yaml,network=local:snippets/unc-k8s-cp-2-network.yaml"
 
+# clone from template
 qm clone $TEMPLATE_VMID 1003 --name unc-k8s-cp-3 --full true
+# resize disk (Resize after cloning, because it takes time to clone a large disk)
+qm resize 1003 scsi0 30G
+# set snippets
 curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/snippets/unc-k8s-cp-3-user.yaml > /var/lib/vz/snippets/unc-k8s-cp-3-user.yaml
 curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/snippets/unc-k8s-cp-3-network.yaml > /var/lib/vz/snippets/unc-k8s-cp-3-network.yaml
 qm set 1003 --cicustom "user=local:snippets/unc-k8s-cp-3-user.yaml,network=local:snippets/unc-k8s-cp-3-network.yaml"
 
+# start vm
 qm start 1001
 qm start 1002
 qm start 1003
