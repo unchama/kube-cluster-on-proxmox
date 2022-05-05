@@ -75,9 +75,30 @@ curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/s
 curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/snippets/unc-k8s-cp-3-network.yaml > /var/lib/vz/snippets/unc-k8s-cp-3-network.yaml
 qm set 1003 --cicustom "user=local:snippets/unc-k8s-cp-3-user.yaml,network=local:snippets/unc-k8s-cp-3-network.yaml"
 
+# clone from template
+qm clone $TEMPLATE_VMID 1101 --name unc-k8s-wk-1 --full true
+# resize disk (Resize after cloning, because it takes time to clone a large disk)
+qm resize 1101 scsi0 30G
+# set snippets
+curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/snippets/unc-k8s-wk-1-user.yaml > /var/lib/vz/snippets/unc-k8s-wk-1-user.yaml
+curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/snippets/unc-k8s-wk-1-network.yaml > /var/lib/vz/snippets/unc-k8s-wk-1-network.yaml
+qm set 1101 --cicustom "user=local:snippets/unc-k8s-wk-1-user.yaml,network=local:snippets/unc-k8s-wk-1-network.yaml"
+
+# clone from template
+qm clone $TEMPLATE_VMID 1102 --name unc-k8s-wk-2 --full true
+# resize disk (Resize after cloning, because it takes time to clone a large disk)
+qm resize 1102 scsi0 30G
+# set snippets
+curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/snippets/unc-k8s-wk-2-user.yaml > /var/lib/vz/snippets/unc-k8s-wk-2-user.yaml
+curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/snippets/unc-k8s-wk-2-network.yaml > /var/lib/vz/snippets/unc-k8s-wk-2-network.yaml
+qm set 1102 --cicustom "user=local:snippets/unc-k8s-wk-2-user.yaml,network=local:snippets/unc-k8s-wk-2-network.yaml"
+
+
 # start vm
 qm start 1001
 qm start 1002
 qm start 1003
+qm start 1101
+qm start 1102
 
 # end region

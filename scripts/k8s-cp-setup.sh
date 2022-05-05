@@ -24,6 +24,9 @@ case $1 in
     "k8s-cp-3")
         break
         ;;
+    "k8s-wk-*")
+        break
+        ;;
     "*")
         usage
         exit 255
@@ -54,8 +57,79 @@ case $1 in
         KEEPALIVED_UNICAST_SRC_IP=${NODE_IPS[2]}
         KEEPALIVED_UNICAST_PEERS=( ${NODE_IPS[0]} ${NODE_IPS[1]} )
         ;;
+    "k8s-wk-*")
+        ;;
 esac
 
+# Install Containerd
+cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+overlay
+br_netfilter
+EOF
+
+sudo modprobe overlay
+sudo modprobe br_netfilter
+
+# Setup required sysctl params, these persist across reboots.
+cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.ipv4.ip_forward                 = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF
+
+# Apply sysctl params without reboot
+sudo sysctl --system
+
+## Install containerd
+sudo apt-get update && sudo apt-get install -y containerd
+
+# Configure containerd
+sudo mkdir -p /etc/containerd
+sudo containerd config default > /etc/containerd/config.toml
+
+if grep -q "SystemdCgroup = true" "/etc/containerd/config.toml"; then
+echo "Config found, skip rewriting..."
+else
+sed -i -e "s/SystemdCgroup \= false/SystemdCgroup \= true/g" /etc/containerd/config.toml
+fi
+
+sudo systemctl restart containerd
+
+# Modify kernel parameters for Kubernetes
+cat <<EOF | tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+vm.overcommit_memory = 1
+vm.panic_on_oom = 0
+kernel.panic = 10
+kernel.panic_on_oops = 1
+kernel.keys.root_maxkeys = 1000000
+kernel.keys.root_maxbytes = 25000000
+EOF
+sysctl --system
+
+# Install kubeadm
+apt-get update && apt-get install -y apt-transport-https curl gnupg2
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+cat <<EOF | tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+apt-get update
+apt-get install -y kubelet=1.23.6-00 kubeadm=1.23.6-00 kubectl=1.23.6-00
+apt-mark hold kubelet kubeadm kubectl
+
+# Disable swap
+swapoff -a
+
+# Ends except worker-plane
+case $1 in
+    "k8s-wk-*")
+        exit 0
+        ;;
+    "k8s-cp-*")
+        break
+        ;;
+esac
 
 # Install HAProxy
 apt-get install -y --no-install-recommends software-properties-common
@@ -152,66 +226,6 @@ EOF
 # Enable VIP services
 systemctl enable keepalived --now
 systemctl enable haproxy --now
-
-# Install Containerd
-cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
-overlay
-br_netfilter
-EOF
-
-sudo modprobe overlay
-sudo modprobe br_netfilter
-
-# Setup required sysctl params, these persist across reboots.
-cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
-net.bridge.bridge-nf-call-iptables  = 1
-net.ipv4.ip_forward                 = 1
-net.bridge.bridge-nf-call-ip6tables = 1
-EOF
-
-# Apply sysctl params without reboot
-sudo sysctl --system
-
-## Install containerd
-sudo apt-get update && sudo apt-get install -y containerd
-
-# Configure containerd
-sudo mkdir -p /etc/containerd
-sudo containerd config default > /etc/containerd/config.toml
-
-if grep -q "SystemdCgroup = true" "/etc/containerd/config.toml"; then
-echo "Config found, skip rewriting..."
-else
-sed -i -e "s/SystemdCgroup \= false/SystemdCgroup \= true/g" /etc/containerd/config.toml
-fi
-
-sudo systemctl restart containerd
-
-# Modify kernel parameters for Kubernetes
-cat <<EOF | tee /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-ip6tables = 1
-net.bridge.bridge-nf-call-iptables = 1
-vm.overcommit_memory = 1
-vm.panic_on_oom = 0
-kernel.panic = 10
-kernel.panic_on_oops = 1
-kernel.keys.root_maxkeys = 1000000
-kernel.keys.root_maxbytes = 25000000
-EOF
-sysctl --system
-
-# Install kubeadm
-apt-get update && apt-get install -y apt-transport-https curl gnupg2
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-cat <<EOF | tee /etc/apt/sources.list.d/kubernetes.list
-deb https://apt.kubernetes.io/ kubernetes-xenial main
-EOF
-apt-get update
-apt-get install -y kubelet=1.23.6-00 kubeadm=1.23.6-00 kubectl=1.23.6-00
-apt-mark hold kubelet kubeadm kubectl
-
-# Disable swap
-swapoff -a
 
 # Ends except first-control-plane
 case $1 in
