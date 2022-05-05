@@ -101,4 +101,11 @@ qm start 1003
 qm start 1101
 qm start 1102
 
+# migrate vm
+qm migrate 1001 unchama-tst-prox01 --online true
+qm migrate 1002 unchama-tst-prox03 --online true
+qm migrate 1003 unchama-tst-prox04 --online true
+qm migrate 1101 unchama-tst-prox01 --online true
+qm migrate 1102 unchama-tst-prox03 --online true
+
 # end region
