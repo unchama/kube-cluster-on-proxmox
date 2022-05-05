@@ -5,29 +5,20 @@
 function usage() {
     echo "usage> k8s-cpp-setup.sh [COMMAND]"
     echo "[COMMAND]:"
+    echo "  help        show command usage"
     echo "  k8s-cp-1    run setup script for k8s-cp-1"
     echo "  k8s-cp-2    run setup script for k8s-cp-2"
     echo "  k8s-cp-3    run setup script for k8s-cp-3"
 }
 
 case $1 in
-    "help")
+    k8s-cp-1|k8s-cp-2|k8s-cp-3|k8s-wk-*)
+        ;;
+    help)
         usage
         exit 255
         ;;
-    "k8s-cp-1")
-        break
-        ;;
-    "k8s-cp-2")
-        break
-        ;;
-    "k8s-cp-3")
-        break
-        ;;
-    "k8s-wk-*")
-        break
-        ;;
-    "*")
+    *)
         usage
         exit 255
         ;;
@@ -39,25 +30,28 @@ NODE_IPS=( 172.16.3.11 172.16.3.12 172.16.3.13 )
 
 # set per-node variables
 case $1 in
-    "k8s-cp-1")
+    k8s-cp-1)
         KEEPALIVED_STATE=MASTER
         KEEPALIVED_PRIORITY=101
         KEEPALIVED_UNICAST_SRC_IP=${NODE_IPS[0]}
         KEEPALIVED_UNICAST_PEERS=( ${NODE_IPS[1]} ${NODE_IPS[2]} )
         ;;
-    "k8s-cp-2")
+    k8s-cp-2)
         KEEPALIVED_STATE=BACKUP
         KEEPALIVED_PRIORITY=99
         KEEPALIVED_UNICAST_SRC_IP=${NODE_IPS[1]}
         KEEPALIVED_UNICAST_PEERS=( ${NODE_IPS[0]} ${NODE_IPS[2]} )
         ;;
-    "k8s-cp-3")
+    k8s-cp-3)
         KEEPALIVED_STATE=BACKUP
         KEEPALIVED_PRIORITY=97
         KEEPALIVED_UNICAST_SRC_IP=${NODE_IPS[2]}
         KEEPALIVED_UNICAST_PEERS=( ${NODE_IPS[0]} ${NODE_IPS[1]} )
         ;;
-    "k8s-wk-*")
+    k8s-wk-*)
+        ;;
+    *)
+        exit 1
         ;;
 esac
 
@@ -123,11 +117,13 @@ swapoff -a
 
 # Ends except worker-plane
 case $1 in
-    "k8s-wk-*")
+    k8s-wk-*)
         exit 0
         ;;
-    "k8s-cp-*")
-        break
+    k8s-cp-1|k8s-cp-2|k8s-cp-3)
+        ;;
+    *)
+        exit 1
         ;;
 esac
 
@@ -229,14 +225,13 @@ systemctl enable haproxy --now
 
 # Ends except first-control-plane
 case $1 in
-    "k8s-cp-1")
-        break
+    k8s-cp-1)
         ;;
-    "k8s-cp-2")
+    k8s-cp-2|k8s-cp-3)
         exit 0
         ;;
-    "k8s-cp-3")
-        exit 0
+    *)
+        exit 1
         ;;
 esac
 
