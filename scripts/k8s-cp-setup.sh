@@ -235,16 +235,16 @@ apiVersion: kubeadm.k8s.io/v1beta3
 kind: InitConfiguration
 bootstrapTokens:
 - token: "$KUBEADM_BOOTSTRAP_TOKEN"
-description: "kubeadm bootstrap token"
-ttl: "24h"
+  description: "kubeadm bootstrap token"
+  ttl: "24h"
 nodeRegistration:
-criSocket: "/var/run/containerd/containerd.sock"
+  criSocket: "/var/run/containerd/containerd.sock"
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
 networking:
-serviceSubnet: "10.96.0.0/16"
-podSubnet: "10.128.0.0/16"
+  serviceSubnet: "10.96.0.0/16"
+  podSubnet: "10.128.0.0/16"
 kubernetesVersion: "v1.23.6"
 controlPlaneEndpoint: "${KUBE_API_SERVER_VIP}:6443"
 ---
@@ -288,14 +288,14 @@ protectKernelDefaults: true
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: JoinConfiguration
 nodeRegistration:
-criSocket: "/var/run/containerd/containerd.sock"
+  criSocket: "/var/run/containerd/containerd.sock"
 discovery:
-bootstrapToken:
+  bootstrapToken:
     apiServerEndpoint: "${KUBE_API_SERVER_VIP}:6443"
     token: "$KUBEADM_BOOTSTRAP_TOKEN"
     unsafeSkipCAVerification: true
 controlPlane:
-certificateKey: "$KUBEADM_UPLOADED_CERTS"
+  certificateKey: "$KUBEADM_UPLOADED_CERTS"
 EOF
 
 # Set join configuration for worker nodes
@@ -308,9 +308,9 @@ protectKernelDefaults: true
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: JoinConfiguration
 nodeRegistration:
-criSocket: "/var/run/containerd/containerd.sock"
+  criSocket: "/var/run/containerd/containerd.sock"
 discovery:
-bootstrapToken:
+  bootstrapToken:
     apiServerEndpoint: "${KUBE_API_SERVER_VIP}:6443"
     token: "$KUBEADM_BOOTSTRAP_TOKEN"
     unsafeSkipCAVerification: true
