@@ -19,4 +19,4 @@ runcmd:
   - su - cloudinit -c "curl -sS https://github.com/unchama.keys >> ~/.ssh/authorized_keys"
   - su - cloudinit -c "chmod 600 ~/.ssh/authorized_keys"
   - su - cloudinit -c "curl -s https://raw.githubusercontent.com/unchama/kude-cluster-on-proxmox/main/scripts/k8s-cp-setup.sh > ~/k8s-cp-setup.sh"
-  - su - cloudinit -c "/bin/bash -eu ~/k8s-cp-setup.sh k8s-cp-3"
+  - su - cloudinit -c "sudo ~/k8s-cp-setup.sh k8s-cp-1"
