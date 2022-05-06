@@ -68,6 +68,31 @@ Host unc-k8s-wk-2
 - ローカル端末上でコマンド実行
 
 ```
+# known_hosts再登録
+ssh-keygen -R 172.16.3.11
+ssh-keygen -R 172.16.3.12
+ssh-keygen -R 172.16.3.13
+ssh-keygen -R 172.16.3.21
+ssh-keygen -R 172.16.3.22
+
+# 接続チェック
+ssh unc-k8s-cp-1 "hostname"
+ssh unc-k8s-cp-2 "hostname"
+ssh unc-k8s-cp-3 "hostname"
+ssh unc-k8s-wk-1 "hostname"
+ssh unc-k8s-wk-2 "hostname"
+
+# cloudinitの実行ログチェック
+ssh unc-k8s-cp-1 "sudo cat /var/log/cloud-init-output.log"
+ssh unc-k8s-cp-2 "sudo cat /var/log/cloud-init-output.log"
+ssh unc-k8s-cp-3 "sudo cat /var/log/cloud-init-output.log"
+ssh unc-k8s-wk-1 "sudo cat /var/log/cloud-init-output.log"
+ssh unc-k8s-wk-2 "sudo cat /var/log/cloud-init-output.log"
+```
+
+- ローカル端末上でコマンド実行
+
+```
 # join_kubeadm_cp.yaml を unc-k8s-cp-2 と unc-k8s-cp-3 にコピー
 scp unc-k8s-cp-1:~/join_kubeadm_cp.yaml ./
 scp ./join_kubeadm_cp.yaml unc-k8s-cp-2:~/
