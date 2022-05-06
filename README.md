@@ -13,9 +13,11 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
       - Pod Network (10.128.0.0/16)
       - Service Network (10.96.0.0/16)
     - External
-      - Node IP (172.16.3.0/25)
-      - API Endpoint (172.16.3.100/32)
-      - NodeBalancer VIP (172.16.3.128/25)
+      - Node IP
+        - Service Network (172.16.3.0-172.16.3.127)
+        - Storage Network (172.16.17.0-172.16.17.127)
+      - API Endpoint (172.16.3.100)
+      - NodeBalancer VIP (172.16.3.128-172.16.3.255)
 
 # 作成フロー
 

@@ -7,6 +7,12 @@ config:
       address: '172.16.3.12'
       netmask: '255.255.240.0'
       gateway: '172.16.15.254'
+  - type: physical
+    name: ens19
+    subnets:
+    - type: static
+      address: '172.16.17.12'
+      netmask: '255.255.252.0'
   - type: nameserver
     address:
     - '172.16.15.254'

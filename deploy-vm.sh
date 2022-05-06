@@ -16,7 +16,9 @@ BOOT_IMAGE_TARGET_VOLUME=tst-network-01-lun01
 wget https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
 
 # create a new VM and attach Network Adaptor
-qm create $TEMPLATE_VMID --cores 2 --memory 4096 --net0 virtio,bridge=vmbr0 --name unc-k8s-cp-template
+# vmbr0=Service Network Segment (172.16.0.0/20)
+# vmbr1=Storage Network Segment (172.16.16.0/22)
+qm create $TEMPLATE_VMID --cores 2 --memory 4096 --net0 virtio,bridge=vmbr0 --net1 virtio,bridge=vmbr1 --name unc-k8s-cp-template
 
 # import the downloaded disk to $BOOT_IMAGE_TARGET_VOLUME storage
 qm importdisk $TEMPLATE_VMID focal-server-cloudimg-amd64.img $BOOT_IMAGE_TARGET_VOLUME
