@@ -1,5 +1,6 @@
 #cloud-config
 hostname: unc-k8s-cp-1
+timezone: Asia/Tokyo
 manage_etc_hosts: true
 chpasswd:
   expire: False
