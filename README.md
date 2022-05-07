@@ -5,6 +5,8 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
 
 - Proxmox Virtual Environment 7.1-11
   - 3ノードクラスタ構成
+- Synology NAS(DS1621+)
+  - 共有ストレージとして利用
 - Ubuntu 20.04 LTS (cloud-init image)
   - kubernetes VMのベースとして使用
 - Network Addressing(うんちゃま自宅検証環境)
@@ -25,8 +27,16 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
   - cillium (Container Network Interface)
   - MetalLB (for LoadBalancer,L2 mode)
   - Synology CSI Driver for Kubernetes(未導入)
+  - argoCD(未導入)
+    - かんがえちう
 
 # 作成フロー
+
+- 以下は本リポジトリのサクッと作ってサクッと壊す対象外なので別途用意しておく
+  - ベアメタルなProxmox環境の構築
+  - Snippetが配置可能な共有ストレージの構築
+  - VM Diskが配置可能な共有ストレージの構築
+  - Network周りの構築
 
 - proxmoxのホストコンソール上で`deploy-vm.sh`を実行すると、各種VMが沸く
 
