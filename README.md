@@ -85,7 +85,7 @@ Host unc-k8s-wk-2
 - ローカル端末上でコマンド実行
 
 ```
-# known_hosts再登録
+# known_hosts登録削除(VM作り直す度にホスト公開鍵が変わる為)
 ssh-keygen -R 172.16.3.11
 ssh-keygen -R 172.16.3.12
 ssh-keygen -R 172.16.3.13
