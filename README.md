@@ -92,7 +92,7 @@ ssh-keygen -R 172.16.3.13
 ssh-keygen -R 172.16.3.21
 ssh-keygen -R 172.16.3.22
 
-# 接続チェック
+# 接続チェック(ホスト公開鍵の登録も兼ねる)
 ssh unc-k8s-cp-1 "hostname"
 ssh unc-k8s-cp-2 "hostname"
 ssh unc-k8s-cp-3 "hostname"
