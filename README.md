@@ -4,8 +4,10 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
 # 前提条件
 
 - Proxmox Virtual Environment 7.1-11
+  - 3ノードクラスタ構成
 - Ubuntu 20.04 LTS (cloud-init image)
-- Network Addressing(検証環境)
+  - kubernetes VMのベースとして使用
+- Network Addressing(うんちゃま自宅検証環境)
   - Service Network Segment (172.16.0.0/20)
   - Storage Network Segment (172.16.16.0/22)
   - kubernetes
@@ -18,6 +20,11 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
         - Storage Network (172.16.17.0-172.16.17.127)
       - API Endpoint (172.16.3.100)
       - NodeBalancer VIP (172.16.3.128-172.16.3.255)
+    - 構成情報
+      - kubelet,kubeadm,kubectl v1.23.6
+      - cillium (Container Network Interface)
+      - MetalLB (for LoadBalancer,L2 mode)
+      - Synology CSI Driver for Kubernetes(未導入)
 
 # 作成フロー
 
