@@ -20,11 +20,11 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
         - Storage Network (172.16.17.0-172.16.17.127)
       - API Endpoint (172.16.3.100)
       - NodeBalancer VIP (172.16.3.128-172.16.3.255)
-    - 構成情報
-      - kubelet,kubeadm,kubectl v1.23.6
-      - cillium (Container Network Interface)
-      - MetalLB (for LoadBalancer,L2 mode)
-      - Synology CSI Driver for Kubernetes(未導入)
+- kubernetes構成情報
+  - kubelet,kubeadm,kubectl v1.23.6
+  - cillium (Container Network Interface)
+  - MetalLB (for LoadBalancer,L2 mode)
+  - Synology CSI Driver for Kubernetes(未導入)
 
 # 作成フロー
 
