@@ -99,7 +99,10 @@ ssh unc-k8s-cp-3 "hostname"
 ssh unc-k8s-wk-1 "hostname"
 ssh unc-k8s-wk-2 "hostname"
 
-# cloudinitの実行ログチェック
+# 最初のコントロールプレーンのkubeadm initが終わっているかチェック
+ssh unc-k8s-cp-1 "kubectl get node && kubectl get pod -A"
+
+# cloudinitの実行ログチェック(トラブルシュート用)
 ssh unc-k8s-cp-1 "sudo cat /var/log/cloud-init-output.log"
 ssh unc-k8s-cp-2 "sudo cat /var/log/cloud-init-output.log"
 ssh unc-k8s-cp-3 "sudo cat /var/log/cloud-init-output.log"
