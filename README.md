@@ -140,6 +140,8 @@ ssh unc-k8s-cp-1 "kubectl get node && kubectl get pod -A"
 
 # cleanup
 
+- proxmoxのホストコンソール上で以下コマンド実行。ノードローカルにいるVMしか操作できない為、全てのノードで打って回る。
+
 ```
 # stop vm
 qm stop 1001
@@ -147,6 +149,7 @@ qm stop 1002
 qm stop 1003
 qm stop 1101
 qm stop 1102
+
 # delete vm
 qm destroy 9050 --destroy-unreferenced-disks true --purge true
 qm destroy 1001 --destroy-unreferenced-disks true --purge true
@@ -155,3 +158,5 @@ qm destroy 1003 --destroy-unreferenced-disks true --purge true
 qm destroy 1101 --destroy-unreferenced-disks true --purge true
 qm destroy 1102 --destroy-unreferenced-disks true --purge true
 ```
+
+- cleanup後、同じVMIDでVMを再作成できなくなることがあるが、proxmoxホストの再起動で解決する。(複数ノードで平行してcleanupコマンド実行するとだめっぽい)
