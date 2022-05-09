@@ -29,6 +29,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
   - Synology CSI Driver for Kubernetes(未導入)
   - argoCD(未導入)
     - かんがえちう
+  - etcdのデイリーバックアップ(未導入)
 
 # 作成フロー
 
