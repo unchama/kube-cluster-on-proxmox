@@ -158,7 +158,7 @@ defaults
     errorfile 503 /etc/haproxy/errors/503.http
     errorfile 504 /etc/haproxy/errors/504.http
 frontend k8s-api
-    bind ${KUBE_API_SERVER_VIP}:6443
+    bind ${KUBE_API_SERVER_VIP}:8443
     mode tcp
     option tcplog
     default_backend k8s-api
@@ -255,7 +255,7 @@ networking:
   serviceSubnet: "10.96.0.0/16"
   podSubnet: "10.128.0.0/16"
 kubernetesVersion: "v1.23.6"
-controlPlaneEndpoint: "${KUBE_API_SERVER_VIP}:6443"
+controlPlaneEndpoint: "${KUBE_API_SERVER_VIP}:8443"
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
@@ -282,7 +282,7 @@ helm install cilium cilium/cilium \
     --namespace kube-system \
     --set kubeProxyReplacement=strict \
     --set k8sServiceHost=${KUBE_API_SERVER_VIP} \
-    --set k8sServicePort=6443
+    --set k8sServicePort=8443
 
 # Install MetalLB Helm Chart
 cat > $HOME/metallb_values.yaml <<EOF
@@ -312,7 +312,7 @@ nodeRegistration:
   criSocket: "/var/run/containerd/containerd.sock"
 discovery:
   bootstrapToken:
-    apiServerEndpoint: "${KUBE_API_SERVER_VIP}:6443"
+    apiServerEndpoint: "${KUBE_API_SERVER_VIP}:8443"
     token: "$KUBEADM_BOOTSTRAP_TOKEN"
     unsafeSkipCAVerification: true
 controlPlane:
@@ -332,7 +332,7 @@ nodeRegistration:
   criSocket: "/var/run/containerd/containerd.sock"
 discovery:
   bootstrapToken:
-    apiServerEndpoint: "${KUBE_API_SERVER_VIP}:6443"
+    apiServerEndpoint: "${KUBE_API_SERVER_VIP}:8443"
     token: "$KUBEADM_BOOTSTRAP_TOKEN"
     unsafeSkipCAVerification: true
 EOF
