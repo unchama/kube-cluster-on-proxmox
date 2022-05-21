@@ -31,6 +31,7 @@ esac
 KUBE_API_SERVER_VIP=172.16.3.100
 VIP_INTERFACE=ens19
 NODE_IPS=( 172.16.3.11 172.16.3.12 172.16.3.13 )
+EXTERNAL_KUBE_API_SERVER="$(tr -dc '[:lower:]' </dev/urandom | head -c 1)$(tr -dc '[:lower:]0-9' </dev/urandom | head -c 7)-unc-k8s-api.unchama.com"
 
 # set per-node variables
 case $1 in
@@ -307,17 +308,22 @@ helm install cilium cilium/cilium \
     --set k8sServiceHost=${KUBE_API_SERVER_VIP} \
     --set k8sServicePort=8443
 
-# Install MetalLB Helm Chart
-cat > $HOME/metallb_values.yaml <<EOF
-configInline:
-  address-pools:
-   - name: default
-     protocol: layer2
-     addresses:
-     - 172.16.3.128/25
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: seichi-systems
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: external-k8s-endpoint
+  namespace: seichi-systems
+type: Opaque
+stringData:
+  fqdn: "${EXTERNAL_KUBE_API_SERVER}"
+  port: "8443"
 EOF
-helm repo add metallb https://metallb.github.io/metallb
-helm install metallb metallb/metallb -f $HOME/metallb_values.yaml
 
 # Generate control plane certificate
 KUBEADM_UPLOADED_CERTS=$(kubeadm init phase upload-certs --upload-certs | tail -n 1)
