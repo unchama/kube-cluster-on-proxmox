@@ -184,9 +184,15 @@ ssh 172.16.0.111 qm destroy 1001 --destroy-unreferenced-disks true --purge true
 ssh 172.16.0.111 qm destroy 1101 --destroy-unreferenced-disks true --purge true
 ssh 172.16.0.111 qm destroy 9050 --destroy-unreferenced-disks true --purge true
 
+## wait due to prevent to cluster-data mismatch on proxmox
+sleep 20s
+
 ## on unchama-tst-prox03
 ssh 172.16.0.113 qm destroy 1002 --destroy-unreferenced-disks true --purge true
 ssh 172.16.0.113 qm destroy 1102 --destroy-unreferenced-disks true --purge true
+
+## wait due to prevent to cluster-data mismatch on proxmox
+sleep 20s
 
 ## on unchama-tst-prox04
 ssh 172.16.0.114 qm destroy 1003 --destroy-unreferenced-disks true --purge true
