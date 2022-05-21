@@ -155,9 +155,9 @@ ssh unc-k8s-wk-3 "sudo kubeadm join --config ~/join_kubeadm_wk.yaml"
 - 軽い動作チェック
 
 ```sh
-ssh seichi-onp-k8s-cp-1 "kubectl get node -o wide && kubectl get pod -A -o wide"
-ssh seichi-onp-k8s-cp-2 "kubectl get node -o wide && kubectl get pod -A -o wide"
-ssh seichi-onp-k8s-cp-3 "kubectl get node -o wide && kubectl get pod -A -o wide"
+ssh unc-k8s-cp-1 "kubectl get node -o wide && kubectl get pod -A -o wide"
+ssh unc-k8s-cp-2 "kubectl get node -o wide && kubectl get pod -A -o wide"
+ssh unc-k8s-cp-3 "kubectl get node -o wide && kubectl get pod -A -o wide"
 ```
 
 # cleanup
