@@ -21,7 +21,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
         - Service Network (172.16.3.0-172.16.3.127)
         - Storage Network (172.16.17.0-172.16.17.127)
       - API Endpoint (172.16.3.100)
-      - NodeBalancer VIP (172.16.3.128-172.16.3.255)
+      - LodeBalancer VIP (172.16.3.128-172.16.3.255)
 - kubernetes構成情報
   - kubelet,kubeadm,kubectl v1.23.6
   - cillium (Container Network Interface)
