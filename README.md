@@ -226,7 +226,7 @@ dmsetup remove vg01-vm--1003--disk--0
 
 - 起動用コマンドめも
 
-```
+```sh
 ## on unchama-tst-prox01
 ssh 172.16.0.111 qm start 1001
 ssh 172.16.0.111 qm start 1101
