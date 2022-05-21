@@ -172,22 +172,21 @@ ssh 172.16.0.114 qm destroy 1003 --destroy-unreferenced-disks true --purge true
 ```
 
 - cleanup後、同じVMIDでVMを再作成できなくなることがあるが、proxmoxホストの再起動で解決する。(複数ノードで平行してcleanupコマンド実行するとだめっぽい)
-もしくは、以下コマンドを入力
+もしくは、以下コマンドを全てのproxmoxノードで入力
 
 ```
-dmsetup remove prd--network--01--lun01--vg01-vm--1101--cloudinit
-dmsetup remove prd--network--01--lun01--vg01-vm--1102--cloudinit
-dmsetup remove prd--network--01--lun01--vg01-vm--1103--cloudinit
+dmsetup remove vg01-vm--1101--cloudinit
+dmsetup remove vg01-vm--1102--cloudinit
 
-dmsetup remove prd--network--01--lun01--vg01-vm--1001--cloudinit
-dmsetup remove prd--network--01--lun01--vg01-vm--1002--cloudinit
-dmsetup remove prd--network--01--lun01--vg01-vm--1003--cloudinit
+dmsetup remove vg01-vm--1001--cloudinit
+dmsetup remove vg01-vm--1002--cloudinit
+dmsetup remove vg01-vm--1003--cloudinit
 
-dmsetup remove prd--network--01--lun01--vg01-vm--1101--disk--0
-dmsetup remove prd--network--01--lun01--vg01-vm--1102--disk--0
-dmsetup remove prd--network--01--lun01--vg01-vm--1103--disk--0
+dmsetup remove vg01-vm--1101--disk--0
+dmsetup remove vg01-vm--1102--disk--0
 
-dmsetup remove prd--network--01--lun01--vg01-vm--1001--disk--0
-dmsetup remove prd--network--01--lun01--vg01-vm--1002--disk--0
-dmsetup remove prd--network--01--lun01--vg01-vm--1003--disk--0
+dmsetup remove vg01-vm--1001--disk--0
+dmsetup remove vg01-vm--1002--disk--0
+dmsetup remove vg01-vm--1003--disk--0
+
 ```
