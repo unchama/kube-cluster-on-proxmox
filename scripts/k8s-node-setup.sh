@@ -1,18 +1,21 @@
-#/bin/bash -eu
+#!/usr/bin/env bash
+
+set -eu
 
 # special thanks!: https://gist.github.com/inductor/32116c486095e5dde886b55ff6e568c8
 
 function usage() {
-    echo "usage> k8s-cpp-setup.sh [COMMAND]"
+    echo "usage> k8s-node-setup.sh [COMMAND]"
     echo "[COMMAND]:"
     echo "  help        show command usage"
-    echo "  k8s-cp-1    run setup script for k8s-cp-1"
-    echo "  k8s-cp-2    run setup script for k8s-cp-2"
-    echo "  k8s-cp-3    run setup script for k8s-cp-3"
+    echo "  unc-k8s-cp-1    run setup script for unc-k8s-cp-1"
+    echo "  unc-k8s-cp-2    run setup script for unc-k8s-cp-2"
+    echo "  unc-k8s-cp-3    run setup script for unc-k8s-cp-3"
+    echo "  unc-k8s-wk-*    run setup script for unc-k8s-wk-*"
 }
 
 case $1 in
-    k8s-cp-1|k8s-cp-2|k8s-cp-3|k8s-wk-*)
+    unc-k8s-cp-1|unc-k8s-cp-2|unc-k8s-cp-3|unc-k8s-wk-*)
         ;;
     help)
         usage
@@ -26,29 +29,30 @@ esac
 
 # Set global variables
 KUBE_API_SERVER_VIP=172.16.3.100
+VIP_INTERFACE=ens19
 NODE_IPS=( 172.16.3.11 172.16.3.12 172.16.3.13 )
 
 # set per-node variables
 case $1 in
-    k8s-cp-1)
+    unc-k8s-cp-1)
         KEEPALIVED_STATE=MASTER
         KEEPALIVED_PRIORITY=101
         KEEPALIVED_UNICAST_SRC_IP=${NODE_IPS[0]}
-        KEEPALIVED_UNICAST_PEERS=( ${NODE_IPS[1]} ${NODE_IPS[2]} )
+        KEEPALIVED_UNICAST_PEERS=( "${NODE_IPS[1]}" "${NODE_IPS[2]}" )
         ;;
-    k8s-cp-2)
+    unc-k8s-cp-2)
         KEEPALIVED_STATE=BACKUP
         KEEPALIVED_PRIORITY=99
         KEEPALIVED_UNICAST_SRC_IP=${NODE_IPS[1]}
-        KEEPALIVED_UNICAST_PEERS=( ${NODE_IPS[0]} ${NODE_IPS[2]} )
+        KEEPALIVED_UNICAST_PEERS=( "${NODE_IPS[0]}" "${NODE_IPS[2]}" )
         ;;
-    k8s-cp-3)
+    unc-k8s-cp-3)
         KEEPALIVED_STATE=BACKUP
         KEEPALIVED_PRIORITY=97
         KEEPALIVED_UNICAST_SRC_IP=${NODE_IPS[2]}
-        KEEPALIVED_UNICAST_PEERS=( ${NODE_IPS[0]} ${NODE_IPS[1]} )
+        KEEPALIVED_UNICAST_PEERS=( "${NODE_IPS[0]}" "${NODE_IPS[1]}" )
         ;;
-    k8s-wk-*)
+    unc-k8s-wk-*)
         ;;
     *)
         exit 1
@@ -79,7 +83,7 @@ sudo apt-get update && sudo apt-get install -y containerd
 
 # Configure containerd
 sudo mkdir -p /etc/containerd
-sudo containerd config default > /etc/containerd/config.toml
+sudo containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
 
 if grep -q "SystemdCgroup = true" "/etc/containerd/config.toml"; then
 echo "Config found, skip rewriting..."
@@ -109,18 +113,24 @@ cat <<EOF | tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 apt-get update
-apt-get install -y kubelet=1.23.6-00 kubeadm=1.23.6-00 kubectl=1.23.6-00
+apt-get install -y kubelet=1.24.0-00 kubeadm=1.24.0-00 kubectl=1.24.0-00
 apt-mark hold kubelet kubeadm kubectl
 
 # Disable swap
 swapoff -a
 
+cat > /etc/crictl.yaml <<EOF
+runtime-endpoint: unix:///var/run/containerd/containerd.sock
+image-endpoint: unix:///var/run/containerd/containerd.sock
+timeout: 10
+EOF
+
 # Ends except worker-plane
 case $1 in
-    k8s-wk-*)
+    unc-k8s-wk-*)
         exit 0
         ;;
-    k8s-cp-1|k8s-cp-2|k8s-cp-3)
+    unc-k8s-cp-1|unc-k8s-cp-2|unc-k8s-cp-3)
         ;;
     *)
         exit 1
@@ -183,14 +193,14 @@ apt-get update && apt-get -y install keepalived
 cat > /etc/keepalived/keepalived.conf <<EOF
 # Define the script used to check if haproxy is still working
 vrrp_script chk_haproxy { 
-    script "/usr/bin/killall -0 haproxy"
+    script "sudo /usr/bin/killall -0 haproxy"
     interval 2 
     weight 2 
 }
 
 # Configuration for Virtual Interface
 vrrp_instance LB_VIP {
-    interface ens18
+    interface ${VIP_INTERFACE}
     state ${KEEPALIVED_STATE}
     priority ${KEEPALIVED_PRIORITY}
     virtual_router_id 51
@@ -219,15 +229,28 @@ vrrp_instance LB_VIP {
 }
 EOF
 
+# Create keepalived user
+groupadd -r keepalived_script
+useradd -r -s /sbin/nologin -g keepalived_script -M keepalived_script
+
+echo "keepalived_script ALL=(ALL) NOPASSWD: /usr/bin/killall" >> /etc/sudoers
+
 # Enable VIP services
 systemctl enable keepalived --now
 systemctl enable haproxy --now
 
+# Reload VIP services
+systemctl reload keepalived
+systemctl reload haproxy
+
+# Pull images first
+kubeadm config images pull
+
 # Ends except first-control-plane
 case $1 in
-    k8s-cp-1)
+    unc-k8s-cp-1)
         ;;
-    k8s-cp-2|k8s-cp-3)
+    unc-k8s-cp-2|unc-k8s-cp-3)
         exit 0
         ;;
     *)
@@ -239,7 +262,7 @@ esac
 KUBEADM_BOOTSTRAP_TOKEN=$(openssl rand -hex 3).$(openssl rand -hex 8)
 
 # Set init configuration for the first control plane
-cat > $HOME/init_kubeadm.yaml <<EOF
+cat > "$HOME"/init_kubeadm.yaml <<EOF
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: InitConfiguration
 bootstrapTokens:
@@ -247,15 +270,18 @@ bootstrapTokens:
   description: "kubeadm bootstrap token"
   ttl: "24h"
 nodeRegistration:
-  criSocket: "/var/run/containerd/containerd.sock"
+  criSocket: "unix:///var/run/containerd/containerd.sock"
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
 networking:
   serviceSubnet: "10.96.0.0/16"
   podSubnet: "10.128.0.0/16"
-kubernetesVersion: "v1.23.6"
+kubernetesVersion: "v1.24.0"
 controlPlaneEndpoint: "${KUBE_API_SERVER_VIP}:8443"
+apiServer:
+  certSANs:
+  - "${EXTERNAL_KUBE_API_SERVER}" # generate random FQDN to prevent malicious DoS attack
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
@@ -263,15 +289,12 @@ cgroupDriver: "systemd"
 protectKernelDefaults: true
 EOF
 
-# Pull images first
-kubeadm config images pull
-
 # Install Kubernetes without kube-proxy
-kubeadm init --config $HOME/init_kubeadm.yaml --skip-phases=addon/kube-proxy --ignore-preflight-errors=NumCPU,Mem
+kubeadm init --config "$HOME"/init_kubeadm.yaml --skip-phases=addon/kube-proxy --ignore-preflight-errors=NumCPU,Mem
 
-mkdir -p $HOME/.kube
-cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-chown $(id -u):$(id -g) $HOME/.kube/config
+mkdir -p "$HOME"/.kube
+cp -i /etc/kubernetes/admin.conf "$HOME"/.kube/config
+chown "$(id -u)":"$(id -g)" "$HOME"/.kube/config
 
 # Install Helm CLI
 curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
@@ -300,7 +323,7 @@ helm install metallb metallb/metallb -f $HOME/metallb_values.yaml
 KUBEADM_UPLOADED_CERTS=$(kubeadm init phase upload-certs --upload-certs | tail -n 1)
 
 # Set join configuration for other control plane nodes
-cat > $HOME/join_kubeadm_cp.yaml <<EOF
+cat > "$HOME"/join_kubeadm_cp.yaml <<EOF
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
 cgroupDriver: "systemd"
@@ -309,7 +332,7 @@ protectKernelDefaults: true
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: JoinConfiguration
 nodeRegistration:
-  criSocket: "/var/run/containerd/containerd.sock"
+  criSocket: "unix:///var/run/containerd/containerd.sock"
 discovery:
   bootstrapToken:
     apiServerEndpoint: "${KUBE_API_SERVER_VIP}:8443"
@@ -320,7 +343,7 @@ controlPlane:
 EOF
 
 # Set join configuration for worker nodes
-cat > $HOME/join_kubeadm_wk.yaml <<EOF
+cat > "$HOME"/join_kubeadm_wk.yaml <<EOF
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
 cgroupDriver: "systemd"
@@ -329,7 +352,7 @@ protectKernelDefaults: true
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: JoinConfiguration
 nodeRegistration:
-  criSocket: "/var/run/containerd/containerd.sock"
+  criSocket: "unix:///var/run/containerd/containerd.sock"
 discovery:
   bootstrapToken:
     apiServerEndpoint: "${KUBE_API_SERVER_VIP}:8443"

@@ -39,9 +39,13 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
   - VM Diskが配置可能な共有ストレージの構築
   - Network周りの構築
 
-- proxmoxのホストコンソール上で`deploy-vm.sh`を実行すると、各種VMが沸く
+- proxmoxのホストコンソール上で`deploy-vm.sh`を実行すると、各種VMが沸きます。`TARGET_BRANCH`はデプロイ対象のコードが反映されたブランチ名に変更してください。
 
-  `/bin/bash <(curl -s https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/main/deploy-vm.sh)`
+
+```sh
+export TARGET_BRANCH=main
+/bin/bash <(curl -s https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/${TARGET_BRANCH}/deploy-vm.sh) ${TARGET_BRANCH}
+```
 
 - ローカル端末上で`~/.ssh/config`をセットアップ
 
@@ -81,17 +85,24 @@ Host unc-k8s-wk-2
   User cloudinit
   IdentityFile ~/.ssh/id_ed25519
   ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+
+Host unc-k8s-wk-3
+  HostName 172.16.3.23
+  User cloudinit
+  IdentityFile ~/.ssh/id_ed25519
+  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
 ```
 
 - ローカル端末上でコマンド実行
 
-```
+```sh
 # known_hosts登録削除(VM作り直す度にホスト公開鍵が変わる為)
 ssh-keygen -R 172.16.3.11
 ssh-keygen -R 172.16.3.12
 ssh-keygen -R 172.16.3.13
 ssh-keygen -R 172.16.3.21
 ssh-keygen -R 172.16.3.22
+ssh-keygen -R 172.16.3.23
 
 # 接続チェック(ホスト公開鍵の登録も兼ねる)
 ssh unc-k8s-cp-1 "hostname"
@@ -99,9 +110,10 @@ ssh unc-k8s-cp-2 "hostname"
 ssh unc-k8s-cp-3 "hostname"
 ssh unc-k8s-wk-1 "hostname"
 ssh unc-k8s-wk-2 "hostname"
+ssh unc-k8s-wk-3 "hostname"
 
 # 最初のコントロールプレーンのkubeadm initが終わっているかチェック
-ssh unc-k8s-cp-1 "kubectl get node && kubectl get pod -A"
+ssh unc-k8s-cp-1 "kubectl get node -o wide && kubectl get pod -A -o wide"
 
 # cloudinitの実行ログチェック(トラブルシュート用)
 ssh unc-k8s-cp-1 "sudo cat /var/log/cloud-init-output.log"
@@ -109,41 +121,50 @@ ssh unc-k8s-cp-2 "sudo cat /var/log/cloud-init-output.log"
 ssh unc-k8s-cp-3 "sudo cat /var/log/cloud-init-output.log"
 ssh unc-k8s-wk-1 "sudo cat /var/log/cloud-init-output.log"
 ssh unc-k8s-wk-2 "sudo cat /var/log/cloud-init-output.log"
+ssh unc-k8s-wk-3 "sudo cat /var/log/cloud-init-output.log"
 ```
 
 - ローカル端末上でコマンド実行
 
-```
+```sh
 # join_kubeadm_cp.yaml を unc-k8s-cp-2 と unc-k8s-cp-3 にコピー
 scp unc-k8s-cp-1:~/join_kubeadm_cp.yaml ./
 scp ./join_kubeadm_cp.yaml unc-k8s-cp-2:~/
 scp ./join_kubeadm_cp.yaml unc-k8s-cp-3:~/
 
-# nc-k8s-cp-2 と unc-k8s-cp-3 で kubeadm join
+# unc-k8s-cp-2 と unc-k8s-cp-3 で kubeadm join
 ssh unc-k8s-cp-2 "sudo kubeadm join --config ~/join_kubeadm_cp.yaml"
 ssh unc-k8s-cp-3 "sudo kubeadm join --config ~/join_kubeadm_cp.yaml"
 
-# join_kubeadm_wk.yaml を unc-k8s-wk-1 と unc-k8s-wk-2 にコピー
+# unc-k8s-cp-2 と unc-k8s-cp-3 で cloudinitユーザー用にkubeconfigを準備
+ssh unc-k8s-cp-2 "mkdir -p \$HOME/.kube && sudo cp -i /etc/kubernetes/admin.conf \$HOME/.kube/config &&sudo chown \$(id -u):\$(id -g) \$HOME/.kube/config"
+ssh unc-k8s-cp-3 "mkdir -p \$HOME/.kube && sudo cp -i /etc/kubernetes/admin.conf \$HOME/.kube/config &&sudo chown \$(id -u):\$(id -g) \$HOME/.kube/config"
+
+# join_kubeadm_wk.yaml を unc-k8s-wk-1 と unc-k8s-wk-2 と unc-k8s-wk-3 にコピー
 scp unc-k8s-cp-1:~/join_kubeadm_wk.yaml ./
 scp ./join_kubeadm_wk.yaml unc-k8s-wk-1:~/
 scp ./join_kubeadm_wk.yaml unc-k8s-wk-2:~/
+scp ./join_kubeadm_wk.yaml unc-k8s-wk-3:~/
 
-# nc-k8s-wk-1 と unc-k8s-wk-2 で kubeadm join
+# nc-k8s-wk-1 と unc-k8s-wk-2 と unc-k8s-wk-3 で kubeadm join
 ssh unc-k8s-wk-1 "sudo kubeadm join --config ~/join_kubeadm_wk.yaml"
 ssh unc-k8s-wk-2 "sudo kubeadm join --config ~/join_kubeadm_wk.yaml"
+ssh unc-k8s-wk-3 "sudo kubeadm join --config ~/join_kubeadm_wk.yaml"
 ```
 
 - 軽い動作チェック
 
-```
-ssh unc-k8s-cp-1 "kubectl get node && kubectl get pod -A"
+```sh
+ssh seichi-onp-k8s-cp-1 "kubectl get node -o wide && kubectl get pod -A -o wide"
+ssh seichi-onp-k8s-cp-2 "kubectl get node -o wide && kubectl get pod -A -o wide"
+ssh seichi-onp-k8s-cp-3 "kubectl get node -o wide && kubectl get pod -A -o wide"
 ```
 
 # cleanup
 
 - proxmoxのホストコンソール上で以下コマンド実行。ノードローカルにいるVMしか操作できない為、全てのノードで打って回る。
 
-```
+```sh
 # stop vm
 ## on unchama-tst-prox01
 ssh 172.16.0.111 qm stop 1001
@@ -155,6 +176,7 @@ ssh 172.16.0.113 qm stop 1102
 
 ## on unchama-tst-prox04
 ssh 172.16.0.114 qm stop 1003
+ssh 172.16.0.114 qm stop 1103
 
 # delete vm
 ## on unchama-tst-prox01
@@ -168,15 +190,17 @@ ssh 172.16.0.113 qm destroy 1102 --destroy-unreferenced-disks true --purge true
 
 ## on unchama-tst-prox04
 ssh 172.16.0.114 qm destroy 1003 --destroy-unreferenced-disks true --purge true
+ssh 172.16.0.114 qm destroy 1103 --destroy-unreferenced-disks true --purge true
 
 ```
 
 - cleanup後、同じVMIDでVMを再作成できなくなることがあるが、proxmoxホストの再起動で解決する。(複数ノードで平行してcleanupコマンド実行するとだめっぽい)
 もしくは、以下コマンドを全てのproxmoxノードで入力
 
-```
+```sh
 dmsetup remove vg01-vm--1101--cloudinit
 dmsetup remove vg01-vm--1102--cloudinit
+dmsetup remove vg01-vm--1103--cloudinit
 
 dmsetup remove vg01-vm--1001--cloudinit
 dmsetup remove vg01-vm--1002--cloudinit
@@ -184,6 +208,7 @@ dmsetup remove vg01-vm--1003--cloudinit
 
 dmsetup remove vg01-vm--1101--disk--0
 dmsetup remove vg01-vm--1102--disk--0
+dmsetup remove vg01-vm--1103--disk--0
 
 dmsetup remove vg01-vm--1001--disk--0
 dmsetup remove vg01-vm--1002--disk--0
