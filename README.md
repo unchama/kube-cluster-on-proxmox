@@ -145,19 +145,49 @@ ssh unc-k8s-cp-1 "kubectl get node && kubectl get pod -A"
 
 ```
 # stop vm
-qm stop 1001
-qm stop 1002
-qm stop 1003
-qm stop 1101
-qm stop 1102
+## on unchama-tst-prox01
+ssh 172.16.0.111 qm stop 1001
+ssh 172.16.0.111 qm stop 1101
+
+## on unchama-tst-prox03
+ssh 172.16.0.113 qm stop 1002
+ssh 172.16.0.113 qm stop 1102
+
+## on unchama-tst-prox04
+ssh 172.16.0.114 qm stop 1003
 
 # delete vm
-qm destroy 9050 --destroy-unreferenced-disks true --purge true
-qm destroy 1001 --destroy-unreferenced-disks true --purge true
-qm destroy 1002 --destroy-unreferenced-disks true --purge true
-qm destroy 1003 --destroy-unreferenced-disks true --purge true
-qm destroy 1101 --destroy-unreferenced-disks true --purge true
-qm destroy 1102 --destroy-unreferenced-disks true --purge true
+## on unchama-tst-prox01
+ssh 172.16.0.111 qm destroy 1001 --destroy-unreferenced-disks true --purge true
+ssh 172.16.0.111 qm destroy 1101 --destroy-unreferenced-disks true --purge true
+ssh 172.16.0.111 qm destroy 9050 --destroy-unreferenced-disks true --purge true
+
+## on unchama-tst-prox03
+ssh 172.16.0.113 qm destroy 1002 --destroy-unreferenced-disks true --purge true
+ssh 172.16.0.113 qm destroy 1102 --destroy-unreferenced-disks true --purge true
+
+## on unchama-tst-prox04
+ssh 172.16.0.114 qm destroy 1003 --destroy-unreferenced-disks true --purge true
+
 ```
 
 - cleanup後、同じVMIDでVMを再作成できなくなることがあるが、proxmoxホストの再起動で解決する。(複数ノードで平行してcleanupコマンド実行するとだめっぽい)
+もしくは、以下コマンドを入力
+
+```
+dmsetup remove prd--network--01--lun01--vg01-vm--1101--cloudinit
+dmsetup remove prd--network--01--lun01--vg01-vm--1102--cloudinit
+dmsetup remove prd--network--01--lun01--vg01-vm--1103--cloudinit
+
+dmsetup remove prd--network--01--lun01--vg01-vm--1001--cloudinit
+dmsetup remove prd--network--01--lun01--vg01-vm--1002--cloudinit
+dmsetup remove prd--network--01--lun01--vg01-vm--1003--cloudinit
+
+dmsetup remove prd--network--01--lun01--vg01-vm--1101--disk--0
+dmsetup remove prd--network--01--lun01--vg01-vm--1102--disk--0
+dmsetup remove prd--network--01--lun01--vg01-vm--1103--disk--0
+
+dmsetup remove prd--network--01--lun01--vg01-vm--1001--disk--0
+dmsetup remove prd--network--01--lun01--vg01-vm--1002--disk--0
+dmsetup remove prd--network--01--lun01--vg01-vm--1003--disk--0
+```
