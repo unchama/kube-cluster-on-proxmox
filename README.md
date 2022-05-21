@@ -1,7 +1,7 @@
 # kube-cluster-on-proxmox
 Proxmox環境でサクッと作ってサクっと壊せる高可用性なkubernetesクラスタを作ってみる
 
-# 前提条件
+## 前提条件
 
 - Proxmox Virtual Environment 7.1-11
   - 3ノードクラスタ構成
@@ -31,7 +31,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
     - かんがえちう
   - etcdのデイリーバックアップ(未導入)
 
-# 作成フロー
+## 作成フロー
 
 - 以下は本リポジトリのサクッと作ってサクッと壊す対象外なので別途用意しておく
   - ベアメタルなProxmox環境の構築
@@ -160,7 +160,7 @@ ssh unc-k8s-cp-2 "kubectl get node -o wide && kubectl get pod -A -o wide"
 ssh unc-k8s-cp-3 "kubectl get node -o wide && kubectl get pod -A -o wide"
 ```
 
-# cleanup
+## cleanup
 
 - proxmoxのホストコンソール上で以下コマンド実行。ノードローカルにいるVMしか操作できない為、全てのノードで打って回る。
 
@@ -220,4 +220,22 @@ dmsetup remove vg01-vm--1001--disk--0
 dmsetup remove vg01-vm--1002--disk--0
 dmsetup remove vg01-vm--1003--disk--0
 
+```
+
+## etc
+
+- 起動用コマンドめも
+
+```
+## on unchama-tst-prox01
+ssh 172.16.0.111 qm start 1001
+ssh 172.16.0.111 qm start 1101
+
+## on unchama-tst-prox03
+ssh 172.16.0.113 qm start 1002
+ssh 172.16.0.113 qm start 1102
+
+## on unchama-tst-prox04
+ssh 172.16.0.114 qm start 1003
+ssh 172.16.0.114 qm start 1103
 ```
