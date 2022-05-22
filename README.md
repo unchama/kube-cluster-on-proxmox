@@ -23,7 +23,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
       - API Endpoint (172.16.3.100)
       - LodeBalancer VIP (172.16.3.128-172.16.3.255)
 - kubernetes構成情報
-  - kubelet,kubeadm,kubectl v1.23.6
+  - kubelet,kubeadm,kubectl v1.24.0
   - cillium (Container Network Interface)
   - MetalLB (for LoadBalancer,L2 mode)
   - Synology CSI Driver for Kubernetes(未導入)
