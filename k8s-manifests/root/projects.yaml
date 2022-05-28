@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: cluster-wide-apps
+  namespace: argocd
+spec:
+  description: The project of applications used by the entire cluster
+  sourceRepos:
+    - '*'
+  destinations:
+    - namespace: 'cluster-wide-apps'
+      server: https://kubernetes.default.svc
+    # k8s-manifests/apps/cluster-wide-app-resources でインストールされる
+    # 各種コンポーネントのリソースインストールを行うため、namespaceを明示的に許可する必要がある
+    - namespace: 'kube-system'
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
