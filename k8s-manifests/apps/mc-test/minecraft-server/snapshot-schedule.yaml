@@ -4,5 +4,5 @@ metadata:
   name: hourly
 spec:
   retention:
-    maxCount: 6
-  schedule: "0 * * * *"
+    maxCount: 24
+  schedule: "*/10 * * * *"
