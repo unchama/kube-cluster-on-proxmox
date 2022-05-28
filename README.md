@@ -29,7 +29,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
       - API Endpoint (172.16.3.100)
       - LoadBalancer VIP (172.16.3.128-172.16.3.255)
 - kubernetes構成情報
-  - [./deploy-vm.sh]()で導入しているもの
+  - [./deploy-vm.sh](./deploy-vm.sh)で導入しているもの
     - kubelet,kubeadm,kubectl v1.24.0
     - cillium (Container Network Interface)
     - argoCD (with helm chart) ※設定は[これ](./k8s-manifests/argocd-helm-chart-values.yaml)
