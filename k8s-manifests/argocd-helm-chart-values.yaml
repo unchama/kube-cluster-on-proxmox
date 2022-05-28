@@ -66,13 +66,6 @@ server:
     application.instanceLabelKey: argocd.argoproj.io/instance
     kustomize.buildOptions: --load-restrictor LoadRestrictionsNone
 
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-      additionalLabels:
-        release: prometheus
-
 controller:
   enableStatefulSet: true
   resources:
@@ -86,12 +79,6 @@ controller:
     enabled: true
     minAvailable: 1
     maxUnavailable: 0
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-      additionalLabels:
-        release: prometheus
 
 dex:
   resources:
@@ -105,12 +92,6 @@ dex:
     enabled: true
     minAvailable: 1
     maxUnavailable: 0
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-      additionalLabels:
-        release: prometheus
 
 redis:
   resources:
@@ -120,12 +101,6 @@ redis:
     requests:
       cpu: 100m
       memory: 128Mi
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-      additionalLabels:
-        release: prometheus
 
 repoServer:
   replicaCount: 1
@@ -136,12 +111,6 @@ repoServer:
     requests:
       cpu: 500m
       memory: 128Mi
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-      additionalLabels:
-        release: prometheus
 
 applicationSet:
   replicaCount: 1
@@ -152,12 +121,6 @@ applicationSet:
     requests:
       cpu: 100m
       memory: 64Mi
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-      additionalLabels:
-        release: prometheus
 
 notifications:
   resources:
@@ -167,9 +130,3 @@ notifications:
     requests:
       cpu: 100m
       memory: 64Mi
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-      additionalLabels:
-        release: prometheus
