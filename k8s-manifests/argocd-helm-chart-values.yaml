@@ -1,0 +1,175 @@
+# Config values for the ArgoCD Helm Chart.
+# For default values, see
+# https://github.com/argoproj/argo-helm/blob/3a2858aa98f607b495d34db0da2a7a3ecad3eaa0/charts/argo-cd/values.yaml
+server:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    # -- Average CPU utilization percentage (to the requested resource) for the Argo CD server [HPA]
+    targetCPUUtilizationPercentage: 90
+    # -- Average memory utilization percentage (to the requested resource) for the Argo CD server [HPA]
+    targetMemoryUtilizationPercentage: 175
+  resources:
+    requests:
+      cpu: 100m
+      memory: 48Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  pdb:
+    enabled: true
+    minAvailable: 1
+    maxUnavailable: 0
+  additionalProjects:
+    - name: argocd-root
+      namespace: argocd
+      description: The top-level project
+      sourceRepos:
+        - "*"
+      destinations:
+        - namespace: "*"
+          server: https://kubernetes.default.svc
+      clusterResourceWhitelist:
+        - group: "*"
+          kind: "*"
+
+  additionalApplications:
+    - name: argocd-root-app-of-apps
+      namespace: argocd
+      project: argocd-root
+      source:
+        repoURL: https://github.com/unchama/kube-cluster-on-proxmox
+        targetRevision: main
+        path: k8s-manifests/apps/root
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: argocd
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: true
+        syncOptions:
+          - CreateNamespace=true
+        retry:
+          limit: -1
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 2m
+
+  configEnabled: true
+  # -- [General Argo CD configuration]
+  config:
+    # Argo CD instance label key
+    application.instanceLabelKey: argocd.argoproj.io/instance
+    kustomize.buildOptions: --load-restrictor LoadRestrictionsNone
+
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prometheus
+
+controller:
+  enableStatefulSet: true
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 128Mi
+  pdb:
+    enabled: true
+    minAvailable: 1
+    maxUnavailable: 0
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prometheus
+
+dex:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  pdb:
+    enabled: true
+    minAvailable: 1
+    maxUnavailable: 0
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prometheus
+
+redis:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prometheus
+
+repoServer:
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 1500m
+      memory: 256Mi
+    requests:
+      cpu: 500m
+      memory: 128Mi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prometheus
+
+applicationSet:
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 64Mi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prometheus
+
+notifications:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 64Mi
+    requests:
+      cpu: 100m
+      memory: 64Mi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prometheus
