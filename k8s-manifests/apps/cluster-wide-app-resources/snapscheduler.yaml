@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: snapscheduler-crd
+  namespace: argocd
+spec:
+  project: cluster-wide-apps
+  source:
+    repoURL: https://github.com/backube/snapscheduler.git
+    path: helm/snapscheduler/crds/
+    targetRevision: v3.0.0
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: snapscheduler
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: snapscheduler
+  namespace: argocd
+spec:
+  project: cluster-wide-apps
+  source:
+    chart: snapscheduler
+    repoURL: https://backube.github.io/helm-charts/
+    targetRevision: 3.0.0
+    helm:
+      releaseName: snapscheduler
+      skipCrds: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: snapscheduler
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - CreateNamespace=true
