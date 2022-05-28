@@ -67,3 +67,43 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 2m
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: mc-test-apps
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/unchama/kube-cluster-on-proxmox
+        revision: main
+        directories:
+          - path: k8s-manifests/apps/mc-test/*
+  template:
+    metadata:
+      # 各Application が argocd namespace に配置されるため prefix した方が安全
+      name: "mc-test-{{path.basenameNormalized}}"
+      namespace: argocd
+    spec:
+      project: mc-test
+      source:
+        repoURL: https://github.com/unchama/kube-cluster-on-proxmox
+        targetRevision: main
+        path: "{{path}}"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: mc-test
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: true
+        syncOptions:
+          - CreateNamespace=true
+        retry:
+          limit: -1
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 2m
