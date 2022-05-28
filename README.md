@@ -158,6 +158,42 @@ ssh unc-k8s-cp-2 "kubectl get node -o wide && kubectl get pod -A -o wide"
 ssh unc-k8s-cp-3 "kubectl get node -o wide && kubectl get pod -A -o wide"
 ```
 
+### ArgoCDへのアクセス
+
+- ローカル端末上で以下コマンドを実行してargoCDの初期パスワードを取得する
+
+```sh
+ssh unc-k8s-cp-1 "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d"
+```
+
+- ローカル端末上でssh-portforward用の`~/.ssh/config`をセットアップ。ちなみに、LocalForward先のIPアドレスは[ここ](./k8s-manifests/apps/cluster-wide-app-resources/argocd-server-lb.yaml)で定義している
+
+```
+Host <踏み台サーバーホスト名>
+  HostName <踏み台サーバーホスト名>
+  ProxyCommand cloudflared access ssh --hostname %h
+  User <踏み台サーバーユーザー名>
+  IdentityFile ~/.ssh/id_ed25519
+
+Host unc-k8s-cp-1_fwd
+  HostName 172.16.3.11
+  User cloudinit
+  IdentityFile ~/.ssh/id_ed25519
+  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+  # ArgoCD web-panel
+  LocalForward 4430 172.16.3.240:443
+```
+
+- トンネル用のSSHセッションを開始する
+
+```sh
+ssh unc-k8s-cp-1_fwd
+```
+
+- ローカルブラウザで(https://localhost:4430)にアクセスし、ユーザーID`admin`でログインする。パスワードは先の手順で取得した初期パスワードを使用する
+
+- Enjoy;)
+
 ## クラスタの削除
 
 - proxmoxのホストコンソール上で以下コマンド実行。ノードローカルにいるVMしか操作できない為、全てのノードで打って回る。
