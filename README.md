@@ -202,24 +202,23 @@ ssh unc-k8s-cp-1_fwd
 
  1. クラスタにkubectlでアクセス可能な端末(`unc-k8s-cp-1`など)で以下コマンドを実行
 
-   ```sh
-   config_file=/tmp/config.yaml
-   csi-user=<ユーザーID>
-   csi-password=<パスワード>
-   cat > $config_file <<EOF
-   ---
-   clients:
-     - host: 172.16.16.240
-       port: 5000
-       https: false
-       username: ${csi-user}
-       password: ${csi-password}
-   EOF
+     ```sh
+     export config_file=/tmp/config.yaml
+     export csi_user=<ユーザーID>
+     export csi_password=<パスワード>
+     cat > $config_file <<EOF
+     ---
+     clients:
+       - host: 172.16.16.240
+         port: 5000
+         https: false
+         username: ${csi_user}
+         password: ${csi_password}
+     EOF
+     kubectl create secret -n synology-csi generic client-info-secret --from-file="$config_file"
 
-   kubectl create secret -n synology-csi generic client-info-secret --from-file="$config_file"
-
-   rm $config_file
-   ```
+     rm $config_file
+     ```
 
 ## クラスタの削除
 
