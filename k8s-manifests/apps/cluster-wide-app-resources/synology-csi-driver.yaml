@@ -15,9 +15,15 @@ spec:
   - group: snapshot.storage.k8s.io
     kind: VolumeSnapshotClass
     name: synology-snapshotclass
+    jsonPointers:
+    - /metadata
+    - /parameters
   - group: storage.k8s.io
     kind: StorageClass
     name: synology-iscsi-storage
+    jsonPointers:
+    - /metadata
+    - /parameters
   destination:
     server: https://kubernetes.default.svc
     namespace: synology-csi
