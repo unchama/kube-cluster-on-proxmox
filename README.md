@@ -194,6 +194,33 @@ ssh unc-k8s-cp-1_fwd
 
 - Enjoy;)
 
+### Synology CSI Driver のセットアップ
+
+`synology-csi-driver`により、Synology NAS(DS1621+)上から動的プロビジョンされたストレージ領域を使用可能です。
+
+利用に必要な`synology-csi-driver`および`storage-class`はArgoCDによりデプロイされます。NASへの接続に必要な認証情報のみ、以下の方法でSecretとして入れ込んでください。
+
+ 1. クラスタにkubectlでアクセス可能な端末(`unc-k8s-cp-1`など)で以下コマンドを実行
+
+   ```sh
+   config_file=/tmp/config.yaml
+   csi-user=<ユーザーID>
+   csi-password=<パスワード>
+   cat > $config_file <<EOF
+   ---
+   clients:
+     - host: 172.16.16.240
+       port: 5000
+       https: false
+       username: ${csi-user}
+       password: ${csi-password}
+   EOF
+
+   kubectl create secret -n synology-csi generic client-info-secret --from-file="$config_file"
+
+   rm $config_file
+   ```
+
 ## クラスタの削除
 
 - proxmoxのホストコンソール上で以下コマンド実行。ノードローカルにいるVMしか操作できない為、全てのノードで打って回る。
