@@ -128,9 +128,8 @@ ssh unc-k8s-wk-3 "sudo cat /var/log/cloud-init-output.log"
 
 ```sh
 # join_kubeadm_cp.yaml を unc-k8s-cp-2 と unc-k8s-cp-3 にコピー
-scp unc-k8s-cp-1:~/join_kubeadm_cp.yaml ./
-scp ./join_kubeadm_cp.yaml unc-k8s-cp-2:~/
-scp ./join_kubeadm_cp.yaml unc-k8s-cp-3:~/
+scp -3 unc-k8s-cp-1:~/join_kubeadm_cp.yaml unc-k8s-cp-2:~/
+scp -3 unc-k8s-cp-1:~/join_kubeadm_cp.yaml unc-k8s-cp-3:~/
 
 # unc-k8s-cp-2 と unc-k8s-cp-3 で kubeadm join
 ssh unc-k8s-cp-2 "sudo kubeadm join --config ~/join_kubeadm_cp.yaml"
@@ -141,10 +140,9 @@ ssh unc-k8s-cp-2 "mkdir -p \$HOME/.kube && sudo cp -i /etc/kubernetes/admin.conf
 ssh unc-k8s-cp-3 "mkdir -p \$HOME/.kube && sudo cp -i /etc/kubernetes/admin.conf \$HOME/.kube/config &&sudo chown \$(id -u):\$(id -g) \$HOME/.kube/config"
 
 # join_kubeadm_wk.yaml を unc-k8s-wk-1 と unc-k8s-wk-2 と unc-k8s-wk-3 にコピー
-scp unc-k8s-cp-1:~/join_kubeadm_wk.yaml ./
-scp ./join_kubeadm_wk.yaml unc-k8s-wk-1:~/
-scp ./join_kubeadm_wk.yaml unc-k8s-wk-2:~/
-scp ./join_kubeadm_wk.yaml unc-k8s-wk-3:~/
+scp -3 unc-k8s-cp-1:~/join_kubeadm_wk.yaml unc-k8s-wk-1:~/
+scp -3 unc-k8s-cp-1:~/join_kubeadm_wk.yaml unc-k8s-wk-2:~/
+scp -3 unc-k8s-cp-1:~/join_kubeadm_wk.yaml unc-k8s-wk-3:~/
 
 # nc-k8s-wk-1 と unc-k8s-wk-2 と unc-k8s-wk-3 で kubeadm join
 ssh unc-k8s-wk-1 "sudo kubeadm join --config ~/join_kubeadm_wk.yaml"
