@@ -160,7 +160,7 @@ ssh unc-k8s-cp-2 "kubectl get node -o wide && kubectl get pod -A -o wide"
 ssh unc-k8s-cp-3 "kubectl get node -o wide && kubectl get pod -A -o wide"
 ```
 
-## cleanup
+## クラスタの削除
 
 - proxmoxのホストコンソール上で以下コマンド実行。ノードローカルにいるVMしか操作できない為、全てのノードで打って回る。
 
@@ -199,28 +199,46 @@ ssh 172.16.0.114 qm destroy 1003 --destroy-unreferenced-disks true --purge true
 ssh 172.16.0.114 qm destroy 1103 --destroy-unreferenced-disks true --purge true
 
 ```
+## クラスタの削除後、クラスタの再作成に失敗する場合
 
-- cleanup後、同じVMIDでVMを再作成できなくなることがあるが、proxmoxホストの再起動で解決する。(複数ノードで平行してcleanupコマンド実行するとだめっぽい)
-もしくは、以下コマンドを全てのproxmoxノードで入力
+クラスタの削除後、同じVMIDでVMを再作成できず、クラスタの作成に失敗することがあります。
 
-```sh
-dmsetup remove vg01-vm--1101--cloudinit
-dmsetup remove vg01-vm--1102--cloudinit
-dmsetup remove vg01-vm--1103--cloudinit
+これは、クラスタの削除時に複数ノードでコマンド`qm destroy`が実行された際に、Device Mapperで生成された仮想ディスクデバイスの一部が消えずに残留することがあるためです。
 
-dmsetup remove vg01-vm--1001--cloudinit
-dmsetup remove vg01-vm--1002--cloudinit
-dmsetup remove vg01-vm--1003--cloudinit
+上記事象に遭遇した場合は、以下**いずれか**の方法で解決を試みてください。
 
-dmsetup remove vg01-vm--1101--disk--0
-dmsetup remove vg01-vm--1102--disk--0
-dmsetup remove vg01-vm--1103--disk--0
+ - 残った仮想ディスクデバイスを手動で削除する
 
-dmsetup remove vg01-vm--1001--disk--0
-dmsetup remove vg01-vm--1002--disk--0
-dmsetup remove vg01-vm--1003--disk--0
+    1. クラスタを構成するVMが一部でも存在する場合は、事前にクラスタの削除を実施してください。
 
-```
+    1. その後、**proxmoxをホストしている物理マシンのターミナル上で**次のコマンドを実行し、残ったデバイスを削除します。
+
+       ```sh
+       for host in 172.16.0.111 172.16.0.113 172.16.0.114 ; do
+         ssh $host dmsetup remove vg01-vm--1101--cloudinit
+         ssh $host dmsetup remove vg01-vm--1102--cloudinit
+         ssh $host dmsetup remove vg01-vm--1103--cloudinit
+
+         ssh $host dmsetup remove vg01-vm--1001--cloudinit
+         ssh $host dmsetup remove vg01-vm--1002--cloudinit
+         ssh $host dmsetup remove vg01-vm--1003--cloudinit
+
+         ssh $host dmsetup remove vg01-vm--1101--disk--0
+         ssh $host dmsetup remove vg01-vm--1102--disk--0
+         ssh $host dmsetup remove vg01-vm--1103--disk--0
+
+         ssh $host dmsetup remove vg01-vm--1001--disk--0
+         ssh $host dmsetup remove vg01-vm--1002--disk--0
+         ssh $host dmsetup remove vg01-vm--1003--disk--0
+       done
+       ```
+
+   参考: [cannot migrate - device-mapper:create ioctl on cluster failed - proxmox forum](https://forum.proxmox.com/threads/cannot-migrate-device-mapper-create-ioctl-on-cluster-failed.12221/)
+
+ - 全proxmoxホストを再起動する
+
+   proxmoxホスト上の全てのVMの停止を伴うため、サービス提供中の本番環境では推奨されません。
+
 
 ## etc
 
