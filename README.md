@@ -190,7 +190,7 @@ Host unc-k8s-cp-1_fwd
 ssh unc-k8s-cp-1_fwd
 ```
 
-- ローカルブラウザで(https://localhost:4430)にアクセスし、ユーザーID`admin`でログインする。パスワードは先の手順で取得した初期パスワードを使用する
+- ローカルブラウザで[https://localhost:4430](https://localhost:4430)にアクセスし、ユーザーID`admin`でログインする。パスワードは先の手順で取得した初期パスワードを使用する
 
 - Enjoy;)
 
