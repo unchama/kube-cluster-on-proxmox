@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minecraft-server
+  labels:
+    app: minecraft-server
+spec:
+  selector:
+    matchLabels:
+      app: minecraft-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: minecraft-server
+    spec:
+      containers:
+      - image: itzg/minecraft-server:2022.6.0-java17-alpine
+        name: minecraft-server
+        env:
+        - name: EULA
+          value: "TRUE"
+        - name: TZ
+          value: Asia/Tokyo
+        - name: TYPE
+          value: PAPER
+        ports:
+        - containerPort: 25565
+        volumeMounts:
+        - name: minecraft-server-data
+          mountPath: /data
+        - name: minecraft-server-plugins
+          mountPath: /plugins
+  volumeClaimTemplates:
+  - metadata:
+      name: minecraft-server-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+  - metadata:
+      name: minecraft-server-plugins
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi

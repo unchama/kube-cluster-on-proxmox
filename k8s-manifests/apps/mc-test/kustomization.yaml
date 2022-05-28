@@ -1,0 +1,6 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: mc-test
+resources:
+  - 00-namespace.yaml
+  - 01-minecraft-server.yaml
