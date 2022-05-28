@@ -1,0 +1,6 @@
+# Prerequisites for synology-csi-driver (volume snapshot feature)
+# docs: https://github.com/kubernetes-csi/external-snapshotter#usage
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - github.com/kubernetes-csi/external-snapshotter/client/config/crd?ref=v6.0.1
