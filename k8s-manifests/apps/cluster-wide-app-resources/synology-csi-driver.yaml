@@ -14,8 +14,10 @@ spec:
   ignoreDifferences:
   - group: apps
     kind: VolumeSnapshotClass
+    name: synology-snapshotclass
   - group: apps
     kind: StorageClass
+    name: synology-iscsi-storage
   destination:
     server: https://kubernetes.default.svc
     namespace: synology-csi
