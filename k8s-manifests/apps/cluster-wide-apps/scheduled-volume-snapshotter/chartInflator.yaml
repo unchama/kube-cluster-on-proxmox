@@ -1,6 +1,0 @@
-apiVersion: builtin
-kind: HelmChartInflationGenerator
-chartName: scheduled-volume-snapshotter
-releaseName: v0.10.3
-releaseNamespace: scheduled-volume-snapshotter
-chartRepoUrl: https://ryaneorth/k8s-scheduled-volume-snapshotter/helm/charts/scheduled-volume-snapshotter/
