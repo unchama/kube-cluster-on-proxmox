@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/ryaneorth/k8s-scheduled-volume-snapshotter.git
     path: helm/charts/scheduled-volume-snapshotter/
-    targetRevision: HEAD
+    targetRevision: v0.10.2
     directory:
       recurse: true
   destination:
