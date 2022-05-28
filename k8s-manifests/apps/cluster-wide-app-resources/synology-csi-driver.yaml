@@ -11,6 +11,11 @@ spec:
     targetRevision: v1.1.0
     directory:
       recurse: true
+  ignoreDifferences:
+  - group: apps
+    kind: VolumeSnapshotClass
+  - group: apps
+    kind: StorageClass
   destination:
     server: https://kubernetes.default.svc
     namespace: synology-csi
