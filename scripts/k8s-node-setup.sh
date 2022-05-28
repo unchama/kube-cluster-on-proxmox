@@ -314,6 +314,8 @@ helm install cilium cilium/cilium \
 # Install ArgoCD Helm chart
 helm repo add argo https://argoproj.github.io/argo-helm
 helm install argocd argo/argo-cd \
+    --create-namespace \
+    --namespace argocd \
     --values https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/main/k8s-manifests/argocd-helm-chart-values.yaml
 
 cat <<EOF | kubectl apply -f -
