@@ -247,6 +247,9 @@ systemctl reload haproxy
 # Pull images first
 kubeadm config images pull
 
+# install k9s
+sudo snap install k9s
+
 # Ends except first-control-plane
 case $1 in
     unc-k8s-cp-1)
