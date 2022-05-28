@@ -203,7 +203,8 @@ ssh unc-k8s-cp-1_fwd
  1. クラスタにkubectlでアクセス可能な端末(`unc-k8s-cp-1`など)で以下コマンドを実行
 
      ```sh
-     export config_file=/tmp/config.yaml
+     # ファイル名は client-info.yml である必要があるので変更しないこと
+     export config_file=/tmp/client-info.yml
      export csi_user=<ユーザーID>
      export csi_password=<パスワード>
      cat > $config_file <<EOF
