@@ -26,7 +26,8 @@ spec:
         - name: TYPE
           value: PAPER
         ports:
-        - containerPort: 25565
+        - name: minecraft
+          containerPort: 25565
         volumeMounts:
         - name: minecraft-server-data
           mountPath: /data
