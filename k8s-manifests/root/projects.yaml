@@ -10,9 +10,11 @@ spec:
   destinations:
     - namespace: 'cluster-wide-apps'
       server: https://kubernetes.default.svc
-    # k8s-manifests/apps/cluster-wide-app-resources でインストールされる
-    # 各種コンポーネントのリソースインストールを行うため、namespaceを明示的に許可する必要がある
+    # k8s-manifests/apps/ で定義されている各種アプリケーションが稼働に必要なリソースのインストールを行う
+    # そのため、project側でリソース追加先のnamespaceへの変更を明示的に許可する必要がある
     - namespace: 'kube-system'
+      server: https://kubernetes.default.svc
+    - namespace: 'metallb-system'
       server: https://kubernetes.default.svc
   clusterResourceWhitelist:
     - group: '*'
