@@ -4,7 +4,13 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
 ## 前提条件
 
 - Proxmox Virtual Environment 7.1-11
-  - 3ノードクラスタ構成
+  - ベアメタル3ノード
+  - クラスタ構成済みであること
+    - クラスタ構成にすると、proxmoxホスト間でrootユーザーによるSSH接続が可能となります。
+
+      これはクラスタの各種機能を維持するために使用されています。また、手順やスクリプトの一部はこのSSH接続を前提としています。
+     
+      参考: [Role of SSH in Proxmox VE Clusters - proxmox wiki](https://pve.proxmox.com/wiki/Cluster_Manager#_role_of_ssh_in_proxmox_ve_clusters)
 - Synology NAS(DS1621+)
   - 共有ストレージとして利用
 - Ubuntu 20.04 LTS (cloud-init image)
@@ -23,13 +29,17 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
       - API Endpoint (172.16.3.100)
       - LoadBalancer VIP (172.16.3.128-172.16.3.255)
 - kubernetes構成情報
-  - kubelet,kubeadm,kubectl v1.24.0
-  - cillium (Container Network Interface)
-  - MetalLB (for LoadBalancer,L2 mode)
-  - Synology CSI Driver for Kubernetes(未導入)
-  - argoCD(未導入)
-    - かんがえちう
-  - etcdのデイリーバックアップ(未導入)
+  - [./deploy-vm.sh]()で導入しているもの
+    - kubelet,kubeadm,kubectl v1.24.0
+    - cillium (Container Network Interface)
+    - argoCD (with helm chart) ※設定は[これ](./k8s-manifests/argocd-helm-chart-values.yaml)
+  - argoCDで導入しているもの
+    - MetalLB (for LoadBalancer,L2 mode)
+    - csi-snapshotter (synology-csi-driverで使うvolumesnapshot機能の前提)
+    - Synology CSI Driver for Kubernetes(synology-csi-driver)
+    - snapscheduler
+    - metrics-server
+    - いろいろテスト用マイクラ鯖
 
 ## 作成フロー
 
