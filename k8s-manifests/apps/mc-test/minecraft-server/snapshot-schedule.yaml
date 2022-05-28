@@ -1,0 +1,8 @@
+apiVersion: snapscheduler.backube/v1
+kind: SnapshotSchedule
+metadata:
+  name: hourly
+spec:
+  retention:
+    maxCount: 6
+  schedule: "0 * * * *"
