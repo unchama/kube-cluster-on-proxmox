@@ -12,9 +12,11 @@ spec:
     directory:
       recurse: true
   ignoreDifferences:
-  - kind: VolumeSnapshotClass
+  - group: snapshot.storage.k8s.io
+    kind: VolumeSnapshotClass
     name: synology-snapshotclass
-  - kind: StorageClass
+  - group: storage.k8s.io
+    kind: StorageClass
     name: synology-iscsi-storage
   destination:
     server: https://kubernetes.default.svc
