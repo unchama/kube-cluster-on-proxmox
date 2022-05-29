@@ -25,6 +25,8 @@ spec:
           value: Asia/Tokyo
         - name: TYPE
           value: PAPER
+        - name: DIFFICULTY
+          value: peaceful
         ports:
         - name: minecraft
           containerPort: 25565
