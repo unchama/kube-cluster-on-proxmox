@@ -27,6 +27,8 @@ spec:
           value: PAPER
         - name: DIFFICULTY
           value: peaceful
+        - name: OPS
+          value: unchama
         ports:
         - name: minecraft
           containerPort: 25565
