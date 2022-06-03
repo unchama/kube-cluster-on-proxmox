@@ -3,6 +3,9 @@ kind: SnapshotSchedule
 metadata:
   name: hourly
 spec:
+  claimSelector:
+    matchLabels:
+      "snapschedule/hourly": "enabled"
   retention:
     maxCount: 24
   schedule: "*/10 * * * *"
