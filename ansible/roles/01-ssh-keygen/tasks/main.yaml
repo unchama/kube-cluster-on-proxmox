@@ -1,0 +1,5 @@
+- name: generate ssh-key
+  become: true
+  openssh_keypair:
+    path: ~/.ssh
+    type: ed25519

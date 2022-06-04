@@ -1,0 +1,15 @@
+---
+- name: 01-ssh-keygen
+  hosts: unc-k8s-cp-1
+  roles:
+    - 01-ssh-keygen
+
+- name: 02-setup-sshd-config
+  hosts: k8s-servers
+  roles:
+    - 02-setup-sshd-config
+
+- name: Install sbaerlocher.qemu-guest-agent
+  hosts: k8s-servers
+  roles:
+    - sbaerlocher.qemu-guest-agent

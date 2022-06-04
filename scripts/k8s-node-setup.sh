@@ -375,3 +375,18 @@ discovery:
     token: "$KUBEADM_BOOTSTRAP_TOKEN"
     unsafeSkipCAVerification: true
 EOF
+
+# ---
+
+# install ansible
+sudo apt-get install -y ansible git
+
+# clone repo
+git clone https://github.com/unchama/kube-cluster-on-proxmox.git
+
+# export ansible.cfg target
+export ANSIBLE_CONFIG="$HOME"/kube-cluster-on-proxmox/ansible/ansible.cfg
+
+# run ansible-playbook
+ansible-galaxy install -r ./kube-cluster-on-proxmox/ansible/roles/requirements.yaml
+ansible-playbook -i ./kube-cluster-on-proxmox/ansible/hosts/k8s-servers/inventory site.yaml
