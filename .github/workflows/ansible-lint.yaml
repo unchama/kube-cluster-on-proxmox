@@ -26,6 +26,6 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: ansible-lint
-        uses: ansible/ansible-lint-action@v4.1.0.post0
+        uses: ansible/ansible-lint-action@v6.2.1
         env:
           ACTION_PLAYBOOK_NAME: ./ansible/site.yaml
