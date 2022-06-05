@@ -5,18 +5,19 @@
 TARGET_BRANCH=$1
 TEMPLATE_VMID=9050
 CLOUDINIT_IMAGE_TARGET_VOLUME=tst-network-01-lun01
-BOOT_IMAGE_TARGET_VOLUME=local-lvm
+TEMPLATE_BOOT_IMAGE_TARGET_VOLUME=local-lvm
+BOOT_IMAGE_TARGET_VOLUME=tst-network-01-lun01
 SNIPPET_TARGET_VOLUME=unchama-tst-prox-bkup01
 SNIPPET_TARGET_PATH=/mnt/pve/${SNIPPET_TARGET_VOLUME}/snippets
 REPOSITORY_RAW_SOURCE_URL="https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/${TARGET_BRANCH}"
 VM_LIST=(
-    #vmid #vmname             #cpu #mem
-    "1001 unc-k8s-cp-1 2    8192 "
-    "1002 unc-k8s-cp-2 2    8192 "
-    "1003 unc-k8s-cp-3 2    8192 "
-    "1101 unc-k8s-wk-1 4    12288"
-    "1102 unc-k8s-wk-2 4    12288"
-    "1103 unc-k8s-wk-3 4    12288"
+    #vmid #vmname      #cpu #mem  #target-node
+    "1001 unc-k8s-cp-1 2    8192  unchama-tst-prox01"
+    "1002 unc-k8s-cp-2 2    8192  unchama-tst-prox03"
+    "1003 unc-k8s-cp-3 2    8192  unchama-tst-prox04"
+    "1101 unc-k8s-wk-1 4    12288 unchama-tst-prox01"
+    "1102 unc-k8s-wk-2 4    12288 unchama-tst-prox03"
+    "1103 unc-k8s-wk-3 4    12288 unchama-tst-prox04"
 )
 
 # end region
@@ -33,11 +34,11 @@ wget https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.i
 # vmbr1=Storage Network Segment (172.16.16.0/22)
 qm create $TEMPLATE_VMID --cores 2 --memory 4096 --net0 virtio,bridge=vmbr0 --net1 virtio,bridge=vmbr1 --name unc-k8s-cp-template
 
-# import the downloaded disk to $BOOT_IMAGE_TARGET_VOLUME storage
-qm importdisk $TEMPLATE_VMID focal-server-cloudimg-amd64.img $BOOT_IMAGE_TARGET_VOLUME
+# import the downloaded disk to $TEMPLATE_BOOT_IMAGE_TARGET_VOLUME storage
+qm importdisk $TEMPLATE_VMID focal-server-cloudimg-amd64.img $TEMPLATE_BOOT_IMAGE_TARGET_VOLUME
 
 # finally attach the new disk to the VM as scsi drive
-qm set $TEMPLATE_VMID --scsihw virtio-scsi-pci --scsi0 $BOOT_IMAGE_TARGET_VOLUME:vm-$TEMPLATE_VMID-disk-0
+qm set $TEMPLATE_VMID --scsihw virtio-scsi-pci --scsi0 $TEMPLATE_BOOT_IMAGE_TARGET_VOLUME:vm-$TEMPLATE_VMID-disk-0
 
 # add Cloud-Init CD-ROM drive
 qm set $TEMPLATE_VMID --ide2 $CLOUDINIT_IMAGE_TARGET_VOLUME:cloudinit
@@ -62,14 +63,14 @@ rm focal-server-cloudimg-amd64.img
 
 for array in "${VM_LIST[@]}"
 do
-    echo "${array}" | while read -r vmid vmname cpu mem
+    echo "${array}" | while read -r vmid vmname cpu mem target-node
     do
         # clone from template
-        qm clone "${TEMPLATE_VMID}" "${vmid}" --name "${vmname}" --full true 
-        qm set "${vmid}" --cores "${cpu}" --memory "${mem}"
+        qm clone "${TEMPLATE_VMID}" "${vmid}" --name "${vmname}" --full true --target "${target-node}" --storage "${BOOT_IMAGE_TARGET_VOLUME}"
+        ssh "${target-node}" qm set "${vmid}" --cores "${cpu}" --memory "${mem}"
 
         # resize disk (Resize after cloning, because it takes time to clone a large disk)
-        qm resize "${vmid}" scsi0 30G
+        ssh "${target-node}" qm resize "${vmid}" scsi0 30G
 
         # create snippet for cloud-init(user-config)
         # START irregular indent because heredoc
@@ -128,18 +129,10 @@ EOF
         curl -s "${REPOSITORY_RAW_SOURCE_URL}/snippets/${vmname}-network.yaml" > "${SNIPPET_TARGET_PATH}"/"${vmname}"-network.yaml
 
         # set snippet to vm
-        qm set "${vmid}" --cicustom "user=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-user.yaml,network=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-network.yaml"
+        ssh "${target-node}" qm set "${vmid}" --cicustom "user=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-user.yaml,network=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-network.yaml"
 
     done
 done
-
-# migrate vm
-qm migrate 1001 unchama-tst-prox01
-qm migrate 1002 unchama-tst-prox03
-qm migrate 1003 unchama-tst-prox04
-qm migrate 1101 unchama-tst-prox01
-qm migrate 1102 unchama-tst-prox03
-qm migrate 1103 unchama-tst-prox04
 
 # start vm
 ## on unchama-tst-prox01
