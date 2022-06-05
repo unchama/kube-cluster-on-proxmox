@@ -1,4 +1,5 @@
 - name: generate ssh-key
   openssh_keypair:
+    user: cloudinit
     path: ~/.ssh/id_ed25519
     type: ed25519
