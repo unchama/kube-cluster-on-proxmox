@@ -2,7 +2,7 @@
   ansible.posix.authorized_key:
     user: cloudinit
     state: present
-    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
 
 - name: Configure sshd
   lineinfile:
