@@ -379,7 +379,7 @@ EOF
 # ---
 
 # install ansible
-sudo apt-get install -y ansible git
+sudo apt-get install -y ansible git sshpass
 
 # clone repo
 git clone https://github.com/unchama/kube-cluster-on-proxmox.git
@@ -388,5 +388,6 @@ git clone https://github.com/unchama/kube-cluster-on-proxmox.git
 export ANSIBLE_CONFIG="$HOME"/kube-cluster-on-proxmox/ansible/ansible.cfg
 
 # run ansible-playbook
-ansible-galaxy install -r ./kube-cluster-on-proxmox/ansible/roles/requirements.yaml
+ansible-galaxy role install -r ./kube-cluster-on-proxmox/ansible/roles/requirements.yaml
+ansible-galaxy collection install -r ./kube-cluster-on-proxmox/ansible/roles/requirements.yaml
 ansible-playbook -i ./kube-cluster-on-proxmox/ansible/hosts/k8s-servers/inventory ./kube-cluster-on-proxmox/ansible/site.yaml
