@@ -11,7 +11,7 @@ SNIPPET_TARGET_VOLUME=unchama-tst-prox-bkup01
 SNIPPET_TARGET_PATH=/mnt/pve/${SNIPPET_TARGET_VOLUME}/snippets
 REPOSITORY_RAW_SOURCE_URL="https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/${TARGET_BRANCH}"
 VM_LIST=(
-    #vmid #vmname      #cpu #mem  #target-node
+    #vmid #vmname      #cpu #mem  #targetnode
     "1001 unc-k8s-cp-1 2    8192  unchama-tst-prox01"
     "1002 unc-k8s-cp-2 2    8192  unchama-tst-prox03"
     "1003 unc-k8s-cp-3 2    8192  unchama-tst-prox04"
@@ -63,14 +63,14 @@ rm focal-server-cloudimg-amd64.img
 
 for array in "${VM_LIST[@]}"
 do
-    echo "${array}" | while read -r vmid vmname cpu mem target-node
+    echo "${array}" | while read -r vmid vmname cpu mem targetnode
     do
         # clone from template
-        qm clone "${TEMPLATE_VMID}" "${vmid}" --name "${vmname}" --full true --target "${target-node}" --storage "${BOOT_IMAGE_TARGET_VOLUME}"
-        ssh "${target-node}" qm set "${vmid}" --cores "${cpu}" --memory "${mem}"
+        qm clone "${TEMPLATE_VMID}" "${vmid}" --name "${vmname}" --full true --target "${targetnode}" --storage "${BOOT_IMAGE_TARGET_VOLUME}"
+        ssh "${targetnode}" qm set "${vmid}" --cores "${cpu}" --memory "${mem}"
 
         # resize disk (Resize after cloning, because it takes time to clone a large disk)
-        ssh "${target-node}" qm resize "${vmid}" scsi0 30G
+        ssh "${targetnode}" qm resize "${vmid}" scsi0 30G
 
         # create snippet for cloud-init(user-config)
         # START irregular indent because heredoc
@@ -129,7 +129,7 @@ EOF
         curl -s "${REPOSITORY_RAW_SOURCE_URL}/snippets/${vmname}-network.yaml" > "${SNIPPET_TARGET_PATH}"/"${vmname}"-network.yaml
 
         # set snippet to vm
-        ssh "${target-node}" qm set "${vmid}" --cicustom "user=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-user.yaml,network=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-network.yaml"
+        ssh "${targetnode}" qm set "${vmid}" --cicustom "user=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-user.yaml,network=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-network.yaml"
 
     done
 done
