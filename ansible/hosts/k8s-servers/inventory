@@ -1,10 +1,10 @@
 [k8s-servers]
 unc-k8s-cp-1 ansible_host=172.16.3.11
 unc-k8s-cp-2 ansible_host=172.16.3.12
-unc-k8s-cp-1 ansible_host=172.16.3.13
+unc-k8s-cp-3 ansible_host=172.16.3.13
 unc-k8s-wk-1 ansible_host=172.16.3.21
-unc-k8s-wk-1 ansible_host=172.16.3.22
-unc-k8s-wk-1 ansible_host=172.16.3.23
+unc-k8s-wk-2 ansible_host=172.16.3.22
+unc-k8s-wk-3 ansible_host=172.16.3.23
 
 [k8s-servers:vars]
 ansible_port=22
