@@ -66,8 +66,14 @@ do
     echo "${array}" | while read -r vmid vmname cpu mem targetnode
     do
         # clone from template
-        qm clone "${TEMPLATE_VMID}" "${vmid}" --name "${vmname}" --full true --target "${targetnode}" --storage "${BOOT_IMAGE_TARGET_VOLUME}"
+        # in clone phase, can't create vm-disk to local volume
+        qm clone "${TEMPLATE_VMID}" "${vmid}" --name "${vmname}" --full true --target "${targetnode}"
+        
+        # set compute resources
         ssh "${targetnode}" qm set "${vmid}" --cores "${cpu}" --memory "${mem}"
+
+        # move vm-disk to local
+        ssh "${targetnode}" qm move-disk "${vmid}" scsi0 "${BOOT_IMAGE_TARGET_VOLUME}" --delete true
 
         # resize disk (Resize after cloning, because it takes time to clone a large disk)
         ssh "${targetnode}" qm resize "${vmid}" scsi0 30G
@@ -131,18 +137,10 @@ EOF
         # set snippet to vm
         ssh "${targetnode}" qm set "${vmid}" --cicustom "user=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-user.yaml,network=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-network.yaml"
 
+        # start vm
+        ssh "${targetnode}" qm start "${vmid}"
+
     done
 done
-
-# start vm
-## on unchama-tst-prox01
-ssh 172.16.0.111 qm start 1001
-ssh 172.16.0.111 qm start 1101
-## on unchama-tst-prox03
-ssh 172.16.0.113 qm start 1002
-ssh 172.16.0.113 qm start 1102
-## on unchama-tst-prox04
-ssh 172.16.0.114 qm start 1003
-ssh 172.16.0.114 qm start 1103
 
 # end region
