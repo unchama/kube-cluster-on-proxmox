@@ -67,37 +67,37 @@ Host <踏み台サーバーホスト名>
   IdentityFile ~/.ssh/id_ed25519
 
 Host unc-k8s-cp-1
-  HostName 172.16.3.11
+  HostName 172.16.17.11
   User cloudinit
   IdentityFile ~/.ssh/id_ed25519
   ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
 
 Host unc-k8s-cp-2
-  HostName 172.16.3.12
+  HostName 172.16.17.12
   User cloudinit
   IdentityFile ~/.ssh/id_ed25519
   ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
 
 Host unc-k8s-cp-3
-  HostName 172.16.3.13
+  HostName 172.16.17.13
   User cloudinit
   IdentityFile ~/.ssh/id_ed25519
   ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
 
 Host unc-k8s-wk-1
-  HostName 172.16.3.21
+  HostName 172.16.17.21
   User cloudinit
   IdentityFile ~/.ssh/id_ed25519
   ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
 
 Host unc-k8s-wk-2
-  HostName 172.16.3.22
+  HostName 172.16.17.22
   User cloudinit
   IdentityFile ~/.ssh/id_ed25519
   ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
 
 Host unc-k8s-wk-3
-  HostName 172.16.3.23
+  HostName 172.16.17.23
   User cloudinit
   IdentityFile ~/.ssh/id_ed25519
   ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
@@ -107,12 +107,12 @@ Host unc-k8s-wk-3
 
 ```sh
 # known_hosts登録削除(VM作り直す度にホスト公開鍵が変わる為)
-ssh-keygen -R 172.16.3.11
-ssh-keygen -R 172.16.3.12
-ssh-keygen -R 172.16.3.13
-ssh-keygen -R 172.16.3.21
-ssh-keygen -R 172.16.3.22
-ssh-keygen -R 172.16.3.23
+ssh-keygen -R 172.16.17.11
+ssh-keygen -R 172.16.17.12
+ssh-keygen -R 172.16.17.13
+ssh-keygen -R 172.16.17.21
+ssh-keygen -R 172.16.17.22
+ssh-keygen -R 172.16.17.23
 
 # 接続チェック(ホスト公開鍵の登録も兼ねる)
 ssh unc-k8s-cp-1 "hostname"
