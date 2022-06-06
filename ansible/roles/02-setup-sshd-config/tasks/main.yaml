@@ -10,6 +10,7 @@
     key: "{{ lookup('file', '/home/cloudinit/.ssh/id_ed25519.pub') }}"
 
 - name: Configure sshd
+  become: yes
   lineinfile:
     path: "/etc/ssh/sshd_config"
     regex: "^(#)?{{item.key}}"
