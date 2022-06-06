@@ -388,6 +388,6 @@ git clone https://github.com/unchama/kube-cluster-on-proxmox.git
 export ANSIBLE_CONFIG="$HOME"/kube-cluster-on-proxmox/ansible/ansible.cfg
 
 # run ansible-playbook
-ansible-galaxy role install -r ./kube-cluster-on-proxmox/ansible/roles/requirements.yaml
-ansible-galaxy collection install -r ./kube-cluster-on-proxmox/ansible/roles/requirements.yaml
-ansible-playbook -i ./kube-cluster-on-proxmox/ansible/hosts/k8s-servers/inventory ./kube-cluster-on-proxmox/ansible/site.yaml
+ansible-galaxy role install -r "$HOME"/kube-cluster-on-proxmox/ansible/roles/requirements.yaml
+ansible-galaxy collection install -r "$HOME"/kube-cluster-on-proxmox/ansible/roles/requirements.yaml
+ansible-playbook -i "$HOME"/kube-cluster-on-proxmox/ansible/hosts/k8s-servers/inventory "$HOME"/kube-cluster-on-proxmox/ansible/site.yaml
