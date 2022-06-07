@@ -137,9 +137,16 @@ EOF
         # set snippet to vm
         ssh "${targetnode}" qm set "${vmid}" --cicustom "user=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-user.yaml,network=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-network.yaml"
 
+    done
+done
+
+for array in "${VM_LIST[@]}"
+do
+    echo "${array}" | while read -r vmid vmname cpu mem targetnode
+    do
         # start vm
         ssh "${targetnode}" qm start "${vmid}"
-
+        
     done
 done
 
