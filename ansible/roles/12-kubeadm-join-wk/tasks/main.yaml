@@ -6,6 +6,5 @@
 
 - name: Execute kubeadm join command
   become: yes
-  ansible.builtin.shell:
-    cmd: kubeadm join --config /root/join_kubeadm_wk.yaml
+  shell: "kubeadm join --config /root/join_kubeadm_wk.yaml"
  
