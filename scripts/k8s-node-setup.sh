@@ -382,7 +382,7 @@ EOF
 sudo apt-get install -y ansible git sshpass
 
 # clone repo
-git clone https://github.com/unchama/kube-cluster-on-proxmox.git "$HOME"
+git clone https://github.com/unchama/kube-cluster-on-proxmox.git "$HOME"/kube-cluster-on-proxmox
 
 # export ansible.cfg target
 export ANSIBLE_CONFIG="$HOME"/kube-cluster-on-proxmox/ansible/ansible.cfg
