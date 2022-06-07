@@ -9,6 +9,16 @@
   roles:
     - 02-setup-sshd-config
 
+- name: 11-kubeadm-join-cp
+  hosts: k8s-servers-cp-with-ssh
+  roles:
+    - 11-kubeadm-join-cp
+
+- name: 12-kubeadm-join-wk
+  hosts: k8s-servers-wk-with-ssh
+  roles:
+    - 12-kubeadm-join-wk 
+
 - name: Install sbaerlocher.qemu-guest-agent
   hosts: k8s-servers-with-ssh
   roles:
