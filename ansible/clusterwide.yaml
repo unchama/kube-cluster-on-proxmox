@@ -20,6 +20,6 @@
     - 12-kubeadm-join-wk
 
 - name: 21-copy-kubeconfig
-  hosts: k8s-servers-with-ssh
+  hosts: k8s-servers-cp-with-ssh
   roles:
     - 21-copy-kubeconfig
