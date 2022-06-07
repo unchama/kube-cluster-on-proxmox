@@ -10,6 +10,6 @@
     - 02-setup-sshd-config
 
 - name: Install sbaerlocher.qemu-guest-agent
-  hosts: k8s-servers
+  hosts: k8s-servers-with-ssh
   roles:
     - sbaerlocher.qemu-guest-agent
