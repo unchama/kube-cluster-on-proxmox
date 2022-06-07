@@ -112,24 +112,6 @@ runcmd:
 EOF
 # ----- #
         # END irregular indent because heredoc
-
-        # only unc-k8s-cp-1, append snippet for cloud-init(user-config)
-        if [ "${vmname}" = "unc-k8s-cp-1" ]
-        then
-            # START irregular indent because heredoc
-# --------- #
-cat >> "$SNIPPET_TARGET_PATH"/"$vmname"-user.yaml << EOF
-  # add kubeconfig to cloudinit user
-  - su - cloudinit -c "mkdir -p ~/.kube"
-  - su - cloudinit -c "sudo cp /etc/kubernetes/admin.conf ~/.kube/config"
-  - su - cloudinit -c "sudo chown cloudinit:cloudinit ~/.kube/config"
-  # copy kubeadm-join-config to cloudinit user home directory
-  - su - cloudinit -c "sudo cp /root/join_kubeadm_cp.yaml ~/join_kubeadm_cp.yaml"
-  - su - cloudinit -c "sudo cp /root/join_kubeadm_wk.yaml ~/join_kubeadm_wk.yaml"
-EOF
-# --------- #
-            # END irregular indent because heredoc
-        fi
         
         # download snippet for cloud-init(network)
         curl -s "${REPOSITORY_RAW_SOURCE_URL}/snippets/${vmname}-network.yaml" > "${SNIPPET_TARGET_PATH}"/"${vmname}"-network.yaml
