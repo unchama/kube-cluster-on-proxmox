@@ -7,29 +7,24 @@ unc-k8s-wk-2 ansible_host=172.16.3.22
 unc-k8s-wk-3 ansible_host=172.16.3.23
 
 [k8s-servers:vars]
-ansible_port=22
-ansible_user=cloudinit
 ansible_ssh_pass=zaq12wsx
-
 
 
 [k8s-servers-with-ssh:children]
 k8s-servers
 
-[k8s-servers-with-ssh:vars]
-ansible_port=22
-ansible_user=cloudinit
-
-
 
 [k8s-servers-cp-with-ssh]
+unc-k8s-cp-1 ansible_host=172.16.3.11
 unc-k8s-cp-2 ansible_host=172.16.3.12
 unc-k8s-cp-3 ansible_host=172.16.3.13
 
-[k8s-servers-cp-with-ssh:vars]
-ansible_port=22
-ansible_user=cloudinit
+[k8s-servers-cp-leader-with-ssh]
+unc-k8s-cp-1 ansible_host=172.16.3.11
 
+[k8s-servers-cp-follower-with-ssh]
+unc-k8s-cp-2 ansible_host=172.16.3.12
+unc-k8s-cp-3 ansible_host=172.16.3.13
 
 
 [k8s-servers-wk-with-ssh]
@@ -37,11 +32,8 @@ unc-k8s-wk-1 ansible_host=172.16.3.21
 unc-k8s-wk-2 ansible_host=172.16.3.22
 unc-k8s-wk-3 ansible_host=172.16.3.23
 
-[k8s-servers-wk-with-ssh:vars]
-ansible_port=22
-ansible_user=cloudinit
-
-
 
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3
+ansible_port=22
+ansible_user=cloudinit

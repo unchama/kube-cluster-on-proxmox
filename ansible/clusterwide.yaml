@@ -1,6 +1,6 @@
 ---
 - name: 01-ssh-keygen
-  hosts: unc-k8s-cp-1
+  hosts: k8s-servers-cp-leader-with-ssh
   roles:
     - 01-ssh-keygen
 
@@ -10,16 +10,16 @@
     - 02-setup-sshd-config
 
 - name: 11-kubeadm-join-cp
-  hosts: k8s-servers-cp-with-ssh
+  hosts: k8s-servers-cp-follower-with-ssh
   roles:
     - 11-kubeadm-join-cp
 
 - name: 12-kubeadm-join-wk
   hosts: k8s-servers-wk-with-ssh
   roles:
-    - 12-kubeadm-join-wk 
+    - 12-kubeadm-join-wk
 
-- name: Install sbaerlocher.qemu-guest-agent
+- name: 21-copy-kubeconfig
   hosts: k8s-servers-with-ssh
   roles:
-    - sbaerlocher.qemu-guest-agent
+    - 21-copy-kubeconfig

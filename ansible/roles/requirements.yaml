@@ -1,8 +1,7 @@
 ---
 # from galaxy
 
-roles:
-- name: sbaerlocher.qemu-guest-agent
+roles: []
 
 collections:
 - ansible.posix

@@ -1,0 +1,4 @@
+- name: Copy file
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: ~/.kube/config
