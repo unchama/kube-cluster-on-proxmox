@@ -30,9 +30,17 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
       - LoadBalancer VIP (172.16.3.128-172.16.3.255)
 - kubernetes構成情報
   - [./deploy-vm.sh](./deploy-vm.sh)で導入しているもの
+    - cloud-init templateの錬成
+    - templateを元にVMクローンしてリソースを設定
+    - cloud-configを錬成してVMに練り込み
+    - VMの起動
+      - 練り込んだcloud-configにより各VM上で[./scripts/k8s-node-setup.sh](/scripts/k8s-node-setup.sh)が実行される
+  - [./scripts/k8s-node-setup.sh](/scripts/k8s-node-setup.sh)で導入しているもの
     - kubelet,kubeadm,kubectl v1.24.0
-    - cillium (Container Network Interface)
-    - argoCD (with helm chart) ※設定は[これ](./k8s-manifests/argocd-helm-chart-values.yaml)
+    - haproxy,keepalived(kubernetes apiのエンドポイント用)
+    - helm install
+      - cillium (Container Network Interface)
+      - argoCD (with helm chart) ※設定は[これ](./k8s-manifests/argocd-helm-chart-values.yaml)
     - 一部セットアップ(kubeadm joinなど)のためにスクリプト内でansibleをキックしています
   - argoCDで導入しているもの
     - MetalLB (for LoadBalancer,L2 mode)
