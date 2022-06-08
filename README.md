@@ -33,6 +33,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
     - kubelet,kubeadm,kubectl v1.24.0
     - cillium (Container Network Interface)
     - argoCD (with helm chart) ※設定は[これ](./k8s-manifests/argocd-helm-chart-values.yaml)
+    - 一部セットアップ(kubeadm joinなど)のためにスクリプト内でansibleをキックしています
   - argoCDで導入しているもの
     - MetalLB (for LoadBalancer,L2 mode)
     - csi-snapshotter (synology-csi-driverで使うvolumesnapshot機能の前提)
@@ -49,7 +50,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
   - VM Diskが配置可能な共有ストレージの構築
   - Network周りの構築
 
-- proxmoxのホストコンソール上で`deploy-vm.sh`を実行すると、各種VMが沸きます。`TARGET_BRANCH`はデプロイ対象のコードが反映されたブランチ名に変更してください。
+- proxmoxのホストコンソール上で`deploy-vm.sh`を実行すると、各種VMが沸き、クラスタの初期セットアップ、ArgoCDの導入などが行われます。`TARGET_BRANCH`はデプロイ対象のコードが反映されたブランチ名に変更してください。
 
 
 ```sh
@@ -122,10 +123,13 @@ ssh unc-k8s-wk-1 "hostname"
 ssh unc-k8s-wk-2 "hostname"
 ssh unc-k8s-wk-3 "hostname"
 
-# 最初のコントロールプレーンのkubeadm initが終わっているかチェック
+# クラスタセットアップが終わっているかチェック
 ssh unc-k8s-cp-1 "kubectl get node -o wide && kubectl get pod -A -o wide"
+ssh unc-k8s-cp-2 "kubectl get node -o wide && kubectl get pod -A -o wide"
+ssh unc-k8s-cp-3 "kubectl get node -o wide && kubectl get pod -A -o wide"
 
 # cloudinitの実行ログチェック(トラブルシュート用)
+# だいたいのスクリプトは unc-k8s-cp-1で動いてます
 ssh unc-k8s-cp-1 "sudo cat /var/log/cloud-init-output.log"
 ssh unc-k8s-cp-2 "sudo cat /var/log/cloud-init-output.log"
 ssh unc-k8s-cp-3 "sudo cat /var/log/cloud-init-output.log"
@@ -134,75 +138,43 @@ ssh unc-k8s-wk-2 "sudo cat /var/log/cloud-init-output.log"
 ssh unc-k8s-wk-3 "sudo cat /var/log/cloud-init-output.log"
 ```
 
-- ローカル端末上でコマンド実行
-
-```sh
-# join_kubeadm_cp.yaml を unc-k8s-cp-2 と unc-k8s-cp-3 にコピー
-scp -3 unc-k8s-cp-1:~/join_kubeadm_cp.yaml unc-k8s-cp-2:~/
-scp -3 unc-k8s-cp-1:~/join_kubeadm_cp.yaml unc-k8s-cp-3:~/
-
-# unc-k8s-cp-2 と unc-k8s-cp-3 で kubeadm join
-ssh unc-k8s-cp-2 "sudo kubeadm join --config ~/join_kubeadm_cp.yaml"
-ssh unc-k8s-cp-3 "sudo kubeadm join --config ~/join_kubeadm_cp.yaml"
-
-# unc-k8s-cp-2 と unc-k8s-cp-3 で cloudinitユーザー用にkubeconfigを準備
-ssh unc-k8s-cp-2 "mkdir -p \$HOME/.kube && sudo cp -i /etc/kubernetes/admin.conf \$HOME/.kube/config &&sudo chown \$(id -u):\$(id -g) \$HOME/.kube/config"
-ssh unc-k8s-cp-3 "mkdir -p \$HOME/.kube && sudo cp -i /etc/kubernetes/admin.conf \$HOME/.kube/config &&sudo chown \$(id -u):\$(id -g) \$HOME/.kube/config"
-
-# join_kubeadm_wk.yaml を unc-k8s-wk-1 と unc-k8s-wk-2 と unc-k8s-wk-3 にコピー
-scp -3 unc-k8s-cp-1:~/join_kubeadm_wk.yaml unc-k8s-wk-1:~/
-scp -3 unc-k8s-cp-1:~/join_kubeadm_wk.yaml unc-k8s-wk-2:~/
-scp -3 unc-k8s-cp-1:~/join_kubeadm_wk.yaml unc-k8s-wk-3:~/
-
-# nc-k8s-wk-1 と unc-k8s-wk-2 と unc-k8s-wk-3 で kubeadm join
-ssh unc-k8s-wk-1 "sudo kubeadm join --config ~/join_kubeadm_wk.yaml"
-ssh unc-k8s-wk-2 "sudo kubeadm join --config ~/join_kubeadm_wk.yaml"
-ssh unc-k8s-wk-3 "sudo kubeadm join --config ~/join_kubeadm_wk.yaml"
-```
-
-- 軽い動作チェック
-
-```sh
-ssh unc-k8s-cp-1 "kubectl get node -o wide && kubectl get pod -A -o wide"
-ssh unc-k8s-cp-2 "kubectl get node -o wide && kubectl get pod -A -o wide"
-ssh unc-k8s-cp-3 "kubectl get node -o wide && kubectl get pod -A -o wide"
-```
+- Enjoy ;)
 
 ### ArgoCDへのアクセス
 
-- ローカル端末上で以下コマンドを実行してargoCDの初期パスワードを取得する
+ 1. ローカル端末上で以下コマンドを実行してargoCDの初期パスワードを取得する
 
-```sh
-ssh unc-k8s-cp-1 "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d"
-```
+     ```sh
+     ssh unc-k8s-cp-1 "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d"
+     ```
 
-- ローカル端末上でssh-portforward用の`~/.ssh/config`をセットアップ。ちなみに、LocalForward先のIPアドレスは[ここ](./k8s-manifests/apps/cluster-wide-app-resources/argocd-server-lb.yaml)で定義している
+ 1. ローカル端末上でssh-portforward用の`~/.ssh/config`をセットアップ。ちなみに、LocalForward先のIPアドレスは[ここ](./k8s-manifests/apps/cluster-wide-app-resources/argocd-server-lb.yaml)で定義している
 
-```
-Host <踏み台サーバーホスト名>
-  HostName <踏み台サーバーホスト名>
-  ProxyCommand cloudflared access ssh --hostname %h
-  User <踏み台サーバーユーザー名>
-  IdentityFile ~/.ssh/id_ed25519
+     ```
+     Host <踏み台サーバーホスト名>
+       HostName <踏み台サーバーホスト名>
+       ProxyCommand cloudflared access ssh --hostname %h
+       User <踏み台サーバーユーザー名>
+       IdentityFile ~/.ssh/id_ed25519
 
-Host unc-k8s-cp-1_fwd
-  HostName 172.16.3.11
-  User cloudinit
-  IdentityFile ~/.ssh/id_ed25519
-  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
-  # ArgoCD web-panel
-  LocalForward 4430 172.16.3.240:443
-```
+     Host unc-k8s-cp-1_fwd
+       HostName 172.16.3.11
+       User cloudinit
+       IdentityFile ~/.ssh/id_ed25519
+       ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+       # ArgoCD web-panel
+       LocalForward 4430 172.16.3.240:443
+     ```
 
-- トンネル用のSSHセッションを開始する
+ 1. トンネル用のSSHセッションを開始する
 
-```sh
-ssh unc-k8s-cp-1_fwd
-```
+     ```sh
+     ssh unc-k8s-cp-1_fwd
+     ```
 
-- ローカルブラウザで[https://localhost:4430](https://localhost:4430)にアクセスし、ユーザーID`admin`でログインする。パスワードは先の手順で取得した初期パスワードを使用する
+ 1. ローカルブラウザで[https://localhost:4430](https://localhost:4430)にアクセスし、ユーザーID`admin`でログインする。パスワードは先の手順で取得した初期パスワードを使用する
 
-- Enjoy;)
+ 1. Enjoy;)
 
 ### Synology CSI Driver のセットアップ
 
