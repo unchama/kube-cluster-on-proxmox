@@ -18,6 +18,13 @@ VM_LIST=(
     "1101 unc-k8s-wk-1 4    12288 172.16.16.111 unchama-tst-prox01"
     "1102 unc-k8s-wk-2 4    12288 172.16.16.113 unchama-tst-prox03"
     "1103 unc-k8s-wk-3 4    12288 172.16.16.114 unchama-tst-prox04"
+    #vmid #vmname      #cpu #mem  #vmsrvip    #vmsanip     #targetip    #targethost
+    "1001 unc-k8s-cp-1 2    8192  172.16.3.11 172.16.17.11 172.16.16.111 unchama-tst-prox01"
+    "1002 unc-k8s-cp-2 2    8192  172.16.3.12 172.16.17.12 172.16.16.113 unchama-tst-prox03"
+    "1003 unc-k8s-cp-3 2    8192  172.16.3.13 172.16.17.13 172.16.16.114 unchama-tst-prox04"
+    "1101 unc-k8s-wk-1 4    12288 172.16.3.21 172.16.17.21 172.16.16.111 unchama-tst-prox01"
+    "1102 unc-k8s-wk-2 4    12288 172.16.3.22 172.16.17.22 172.16.16.113 unchama-tst-prox03"
+    "1103 unc-k8s-wk-3 4    12288 172.16.3.23 172.16.17.23 172.16.16.114 unchama-tst-prox04"
 )
 
 # endregion
@@ -63,7 +70,7 @@ rm focal-server-cloudimg-amd64.img
 
 for array in "${VM_LIST[@]}"
 do
-    echo "${array}" | while read -r vmid vmname cpu mem targetip targethost
+    echo "${array}" | while read -r vmid vmname cpu mem vmsrvip vmsanip targetip targethost
     do
         # clone from template
         # in clone phase, can't create vm-disk to local volume
@@ -112,9 +119,34 @@ runcmd:
 EOF
 # ----- #
         # END irregular indent because heredoc
-        
-        # download snippet for cloud-init(network)
-        curl -s "${REPOSITORY_RAW_SOURCE_URL}/snippets/${vmname}-network.yaml" > "${SNIPPET_TARGET_PATH}"/"${vmname}"-network.yaml
+
+        # create snippet for cloud-init(network-config)
+        # START irregular indent because heredoc
+# ----- #
+cat > "$SNIPPET_TARGET_PATH"/"$vmname"-network.yaml << EOF
+version: 1
+config:
+  - type: physical
+    name: ens18
+    subnets:
+    - type: static
+      address: '${vmsrvip}'
+      netmask: '255.255.240.0'
+      gateway: '172.16.15.254'
+  - type: physical
+    name: ens19
+    subnets:
+    - type: static
+      address: '${vmsanip}'
+      netmask: '255.255.252.0'
+  - type: nameserver
+    address:
+    - '172.16.15.254'
+    search:
+    - 'local'
+EOF
+# ----- #
+        # END irregular indent because heredoc
 
         # set snippet to vm
         ssh -n "${targetip}" qm set "${vmid}" --cicustom "user=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-user.yaml,network=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-network.yaml"
@@ -124,7 +156,7 @@ done
 
 for array in "${VM_LIST[@]}"
 do
-    echo "${array}" | while read -r vmid vmname cpu mem targetip targethost
+    echo "${array}" | while read -r vmid vmname cpu mem vmsrvip vmsanip targetip targethost
     do
         # start vm
         ssh -n "${targetip}" qm start "${vmid}"
