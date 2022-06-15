@@ -11,13 +11,16 @@ SNIPPET_TARGET_VOLUME=unchama-tst-prox-bkup01
 SNIPPET_TARGET_PATH=/mnt/pve/${SNIPPET_TARGET_VOLUME}/snippets
 REPOSITORY_RAW_SOURCE_URL="https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/${TARGET_BRANCH}"
 VM_LIST=(
-    #vmid #vmname      #cpu #mem  #targetip    #targethost
-    "1001 unc-k8s-cp-1 2    8192  172.16.16.111 unchama-tst-prox01"
-    "1002 unc-k8s-cp-2 2    8192  172.16.16.113 unchama-tst-prox03"
-    "1003 unc-k8s-cp-3 2    8192  172.16.16.114 unchama-tst-prox04"
-    "1101 unc-k8s-wk-1 4    12288 172.16.16.111 unchama-tst-prox01"
-    "1102 unc-k8s-wk-2 4    12288 172.16.16.113 unchama-tst-prox03"
-    "1103 unc-k8s-wk-3 4    12288 172.16.16.114 unchama-tst-prox04"
+    # ---
+    # vmid:       proxmox上でVMを識別するID
+    # vmname:     proxmox上でVMを識別する名称およびホスト名
+    # cpu:        VMに割り当てるコア数(vCPU)
+    # mem:        VMに割り当てるメモリ(MB)
+    # vmsrvip:    VMのService Segment側NICに割り振る固定IP
+    # vmsanip:    VMのStorage Segment側NICに割り振る固定IP
+    # targetip:   VMの配置先となるProxmoxホストのIP
+    # targethost: VMの配置先となるProxmoxホストのホスト名
+    # ---
     #vmid #vmname      #cpu #mem  #vmsrvip    #vmsanip     #targetip    #targethost
     "1001 unc-k8s-cp-1 2    8192  172.16.3.11 172.16.17.11 172.16.16.111 unchama-tst-prox01"
     "1002 unc-k8s-cp-2 2    8192  172.16.3.12 172.16.17.12 172.16.16.113 unchama-tst-prox03"
