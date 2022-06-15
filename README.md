@@ -9,7 +9,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
     - クラスタ構成にすると、proxmoxホスト間でrootユーザーによるSSH接続が可能となります。
 
       これはクラスタの各種機能を維持するために使用されています。また、手順やスクリプトの一部はこのSSH接続を前提としています。
-     
+
       参考: [Role of SSH in Proxmox VE Clusters - proxmox wiki](https://pve.proxmox.com/wiki/Cluster_Manager#_role_of_ssh_in_proxmox_ve_clusters)
 - Synology NAS(DS1621+)
   - 共有ストレージとして利用
@@ -52,133 +52,134 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
 
 ## 作成フロー
 
-- 以下は本リポジトリのサクッと作ってサクッと壊す対象外なので別途用意しておく
-  - ベアメタルなProxmox環境の構築
-  - Snippetが配置可能な共有ストレージの構築
-  - VM Diskが配置可能な共有ストレージの構築
-  - Network周りの構築
+ 1. 以下は本リポジトリのサクッと作ってサクッと壊す対象外なので別途用意しておく
+    - ベアメタルなProxmox環境の構築
+    - Snippetが配置可能な共有ストレージの構築
+    - VM Diskが配置可能な共有ストレージの構築
+    - Network周りの構築
 
-- proxmoxのホストコンソール上で`deploy-vm.sh`を実行すると、各種VMが沸き、クラスタの初期セットアップ、ArgoCDの導入などが行われます。`TARGET_BRANCH`はデプロイ対象のコードが反映されたブランチ名に変更してください。
+ 1. proxmoxのホストコンソール上で`deploy-vm.sh`を実行すると、各種VMが沸き、クラスタの初期セットアップ、ArgoCDの導入などが行われます。`TARGET_BRANCH`はデプロイ対象のコードが反映されたブランチ名に変更してください。
 
+    ```sh
+    export TARGET_BRANCH=main
+    /bin/bash <(curl -s https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/${TARGET_BRANCH}/deploy-vm.sh) ${TARGET_BRANCH}
+    ```
 
-```sh
-export TARGET_BRANCH=main
-/bin/bash <(curl -s https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/${TARGET_BRANCH}/deploy-vm.sh) ${TARGET_BRANCH}
-```
+    `deploy-vm.sh`ではProxmoxホスト間でSSH接続を行っています。クラスタ構成済みのProxmoxホストを前提としているため追加の認証情報の入力は不要ですが、Proxmoxホストを新規もしくはクリーンインストールした後に`deploy-vm.sh`を実行する場合、ホスト公開鍵の登録を確認するプロンプトが出る場合がありますので対応してください。
 
-- ローカル端末上で`~/.ssh/config`をセットアップ
+ 1. ローカル端末上で`~/.ssh/config`をセットアップ
 
-```
-Host <踏み台サーバーホスト名>
-  HostName <踏み台サーバーホスト名>
-  ProxyCommand cloudflared access ssh --hostname %h
-  User <踏み台サーバーユーザー名>
-  IdentityFile ~/.ssh/id_ed25519
+    ```txt
+    Host <踏み台サーバーホスト名>
+      HostName <踏み台サーバーホスト名>
+      ProxyCommand cloudflared access ssh --hostname %h
+      User <踏み台サーバーユーザー名>
+      IdentityFile ~/.ssh/id_ed25519
 
-Host unc-k8s-cp-1
-  HostName 172.16.17.11
-  User cloudinit
-  IdentityFile ~/.ssh/id_ed25519
-  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+    Host unc-k8s-cp-1
+      HostName 172.16.17.11
+      User cloudinit
+      IdentityFile ~/.ssh/id_ed25519
+      ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
 
-Host unc-k8s-cp-2
-  HostName 172.16.17.12
-  User cloudinit
-  IdentityFile ~/.ssh/id_ed25519
-  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+    Host unc-k8s-cp-2
+      HostName 172.16.17.12
+      User cloudinit
+      IdentityFile ~/.ssh/id_ed25519
+      ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
 
-Host unc-k8s-cp-3
-  HostName 172.16.17.13
-  User cloudinit
-  IdentityFile ~/.ssh/id_ed25519
-  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+    Host unc-k8s-cp-3
+      HostName 172.16.17.13
+      User cloudinit
+      IdentityFile ~/.ssh/id_ed25519
+      ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
 
-Host unc-k8s-wk-1
-  HostName 172.16.17.21
-  User cloudinit
-  IdentityFile ~/.ssh/id_ed25519
-  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+    Host unc-k8s-wk-1
+      HostName 172.16.17.21
+      User cloudinit
+      IdentityFile ~/.ssh/id_ed25519
+      ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
 
-Host unc-k8s-wk-2
-  HostName 172.16.17.22
-  User cloudinit
-  IdentityFile ~/.ssh/id_ed25519
-  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+    Host unc-k8s-wk-2
+      HostName 172.16.17.22
+      User cloudinit
+      IdentityFile ~/.ssh/id_ed25519
+      ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
 
-Host unc-k8s-wk-3
-  HostName 172.16.17.23
-  User cloudinit
-  IdentityFile ~/.ssh/id_ed25519
-  ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
-```
+    Host unc-k8s-wk-3
+      HostName 172.16.17.23
+      User cloudinit
+      IdentityFile ~/.ssh/id_ed25519
+      ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+    ```
 
-- ローカル端末上でコマンド実行
+ 1. ローカル端末上でコマンド実行
 
-```sh
-# known_hosts登録削除(VM作り直す度にホスト公開鍵が変わる為)
-ssh-keygen -R 172.16.17.11
-ssh-keygen -R 172.16.17.12
-ssh-keygen -R 172.16.17.13
-ssh-keygen -R 172.16.17.21
-ssh-keygen -R 172.16.17.22
-ssh-keygen -R 172.16.17.23
+    ```sh
+    # known_hosts登録削除(VM作り直す度にホスト公開鍵が変わる為)
+    ssh-keygen -R 172.16.17.11
+    ssh-keygen -R 172.16.17.12
+    ssh-keygen -R 172.16.17.13
+    ssh-keygen -R 172.16.17.21
+    ssh-keygen -R 172.16.17.22
+    ssh-keygen -R 172.16.17.23
 
-# 接続チェック(ホスト公開鍵の登録も兼ねる)
-ssh unc-k8s-cp-1 "hostname"
-ssh unc-k8s-cp-2 "hostname"
-ssh unc-k8s-cp-3 "hostname"
-ssh unc-k8s-wk-1 "hostname"
-ssh unc-k8s-wk-2 "hostname"
-ssh unc-k8s-wk-3 "hostname"
+    # 接続チェック(ホスト公開鍵の登録も兼ねる)
+    ssh unc-k8s-cp-1 "hostname"
+    ssh unc-k8s-cp-2 "hostname"
+    ssh unc-k8s-cp-3 "hostname"
+    ssh unc-k8s-wk-1 "hostname"
+    ssh unc-k8s-wk-2 "hostname"
+    ssh unc-k8s-wk-3 "hostname"
 
-# クラスタセットアップが終わっているかチェック
-ssh unc-k8s-cp-1 "kubectl get node -o wide && kubectl get pod -A -o wide"
-ssh unc-k8s-cp-2 "kubectl get node -o wide && kubectl get pod -A -o wide"
-ssh unc-k8s-cp-3 "kubectl get node -o wide && kubectl get pod -A -o wide"
+    # クラスタセットアップが終わっているかチェック
+    ssh unc-k8s-cp-1 "kubectl get node -o wide && kubectl get pod -A -o wide"
+    ssh unc-k8s-cp-2 "kubectl get node -o wide && kubectl get pod -A -o wide"
+    ssh unc-k8s-cp-3 "kubectl get node -o wide && kubectl get pod -A -o wide"
 
-# cloudinitの実行ログチェック(トラブルシュート用)
-# だいたいのスクリプトは unc-k8s-cp-1で動いてます
-ssh unc-k8s-cp-1 "sudo cat /var/log/cloud-init-output.log"
-ssh unc-k8s-cp-2 "sudo cat /var/log/cloud-init-output.log"
-ssh unc-k8s-cp-3 "sudo cat /var/log/cloud-init-output.log"
-ssh unc-k8s-wk-1 "sudo cat /var/log/cloud-init-output.log"
-ssh unc-k8s-wk-2 "sudo cat /var/log/cloud-init-output.log"
-ssh unc-k8s-wk-3 "sudo cat /var/log/cloud-init-output.log"
-```
+    # cloudinitの実行ログチェック(トラブルシュート用)
+    # だいたいのスクリプトは unc-k8s-cp-1で動いてます
+    ssh unc-k8s-cp-1 "sudo cat /var/log/cloud-init-output.log"
+    ssh unc-k8s-cp-2 "sudo cat /var/log/cloud-init-output.log"
+    ssh unc-k8s-cp-3 "sudo cat /var/log/cloud-init-output.log"
+    ssh unc-k8s-wk-1 "sudo cat /var/log/cloud-init-output.log"
+    ssh unc-k8s-wk-2 "sudo cat /var/log/cloud-init-output.log"
+    ssh unc-k8s-wk-3 "sudo cat /var/log/cloud-init-output.log"
+    ```
 
-- Enjoy ;)
+ 1. Enjoy ;)
 
 ### ArgoCDへのアクセス
 
  1. ローカル端末上で以下コマンドを実行してargoCDの初期パスワードを取得する
 
-     ```sh
-     ssh unc-k8s-cp-1 "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d"
-     ```
+    ```sh
+    ssh unc-k8s-cp-1 "kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d"
+    ```
 
  1. ローカル端末上でssh-portforward用の`~/.ssh/config`をセットアップ。ちなみに、LocalForward先のIPアドレスは[ここ](./k8s-manifests/apps/cluster-wide-app-resources/argocd-server-lb.yaml)で定義している
 
-     ```
-     Host <踏み台サーバーホスト名>
-       HostName <踏み台サーバーホスト名>
-       ProxyCommand cloudflared access ssh --hostname %h
-       User <踏み台サーバーユーザー名>
-       IdentityFile ~/.ssh/id_ed25519
+    ```txt
+    Host <踏み台サーバーホスト名>
+      HostName <踏み台サーバーホスト名>
+      ProxyCommand cloudflared access ssh --hostname %h
+      User <踏み台サーバーユーザー名>
+      IdentityFile ~/.ssh/id_ed25519
 
-     Host unc-k8s-cp-1_fwd
-       HostName 172.16.3.11
-       User cloudinit
-       IdentityFile ~/.ssh/id_ed25519
-       ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
-       # ArgoCD web-panel
-       LocalForward 4430 172.16.3.240:443
-     ```
+    Host unc-k8s-cp-1_fwd
+      HostName 172.16.3.11
+      User cloudinit
+      IdentityFile ~/.ssh/id_ed25519
+      ProxyCommand ssh -W %h:%p <踏み台サーバーホスト名>
+      # ArgoCD web-panel
+      LocalForward 4430 172.16.3.240:443
+    ```
 
  1. トンネル用のSSHセッションを開始する
 
-     ```sh
-     ssh unc-k8s-cp-1_fwd
-     ```
+    ```sh
+    ssh unc-k8s-cp-1_fwd
+    ```
 
  1. ローカルブラウザで[https://localhost:4430](https://localhost:4430)にアクセスし、ユーザーID`admin`でログインする。パスワードは先の手順で取得した初期パスワードを使用する
 
@@ -192,64 +193,64 @@ ssh unc-k8s-wk-3 "sudo cat /var/log/cloud-init-output.log"
 
  1. クラスタにkubectlでアクセス可能な端末(`unc-k8s-cp-1`など)で以下コマンドを実行
 
-     ```sh
-     # ファイル名は client-info.yml である必要があるので変更しないこと
-     export config_file=/tmp/client-info.yml
-     export csi_user=<ユーザーID>
-     export csi_password=<パスワード>
-     cat > $config_file <<EOF
-     ---
-     clients:
-       - host: 172.16.16.240
-         port: 5000
-         https: false
-         username: ${csi_user}
-         password: ${csi_password}
-     EOF
-     kubectl create secret -n synology-csi generic client-info-secret --from-file="$config_file"
+    ```sh
+    # ファイル名は client-info.yml である必要があるので変更しないこと
+    export config_file=/tmp/client-info.yml
+    export csi_user=<ユーザーID>
+    export csi_password=<パスワード>
+    cat > $config_file <<EOF
+    ---
+    clients:
+      - host: 172.16.16.240
+        port: 5000
+        https: false
+        username: ${csi_user}
+        password: ${csi_password}
+    EOF
+    kubectl create secret -n synology-csi generic client-info-secret --from-file="$config_file"
 
-     rm $config_file
-     ```
+    rm $config_file
+    ```
 
 ## クラスタの削除
 
-- proxmoxのホストコンソール上で以下コマンド実行。ノードローカルにいるVMしか操作できない為、全てのノードで打って回る。
+ 1. proxmoxのホストコンソール上で以下コマンド実行。ノードローカルにいるVMしか操作できない為、全てのノードで打って回る。
 
-```sh
-# stop vm
-## on unchama-tst-prox01
-ssh 172.16.0.111 qm stop 1001
-ssh 172.16.0.111 qm stop 1101
+    ```sh
+    # stop vm
+    ## on unchama-tst-prox01
+    ssh 172.16.0.111 qm stop 1001
+    ssh 172.16.0.111 qm stop 1101
 
-## on unchama-tst-prox03
-ssh 172.16.0.113 qm stop 1002
-ssh 172.16.0.113 qm stop 1102
+    ## on unchama-tst-prox03
+    ssh 172.16.0.113 qm stop 1002
+    ssh 172.16.0.113 qm stop 1102
 
-## on unchama-tst-prox04
-ssh 172.16.0.114 qm stop 1003
-ssh 172.16.0.114 qm stop 1103
+    ## on unchama-tst-prox04
+    ssh 172.16.0.114 qm stop 1003
+    ssh 172.16.0.114 qm stop 1103
 
-# delete vm
-## on unchama-tst-prox01
-ssh 172.16.0.111 qm destroy 1001 --destroy-unreferenced-disks true --purge true
-ssh 172.16.0.111 qm destroy 1101 --destroy-unreferenced-disks true --purge true
-ssh 172.16.0.111 qm destroy 9050 --destroy-unreferenced-disks true --purge true
+    # delete vm
+    ## on unchama-tst-prox01
+    ssh 172.16.0.111 qm destroy 1001 --destroy-unreferenced-disks true --purge true
+    ssh 172.16.0.111 qm destroy 1101 --destroy-unreferenced-disks true --purge true
+    ssh 172.16.0.111 qm destroy 9050 --destroy-unreferenced-disks true --purge true
 
-## wait due to prevent to cluster-data mismatch on proxmox
-sleep 20s
+    ## wait due to prevent to cluster-data mismatch on proxmox
+    sleep 20s
 
-## on unchama-tst-prox03
-ssh 172.16.0.113 qm destroy 1002 --destroy-unreferenced-disks true --purge true
-ssh 172.16.0.113 qm destroy 1102 --destroy-unreferenced-disks true --purge true
+    ## on unchama-tst-prox03
+    ssh 172.16.0.113 qm destroy 1002 --destroy-unreferenced-disks true --purge true
+    ssh 172.16.0.113 qm destroy 1102 --destroy-unreferenced-disks true --purge true
 
-## wait due to prevent to cluster-data mismatch on proxmox
-sleep 20s
+    ## wait due to prevent to cluster-data mismatch on proxmox
+    sleep 20s
 
-## on unchama-tst-prox04
-ssh 172.16.0.114 qm destroy 1003 --destroy-unreferenced-disks true --purge true
-ssh 172.16.0.114 qm destroy 1103 --destroy-unreferenced-disks true --purge true
+    ## on unchama-tst-prox04
+    ssh 172.16.0.114 qm destroy 1003 --destroy-unreferenced-disks true --purge true
+    ssh 172.16.0.114 qm destroy 1103 --destroy-unreferenced-disks true --purge true
+    ```
 
-```
 ## クラスタの削除後、クラスタの再作成に失敗する場合
 
 クラスタの削除後、同じVMIDでVMを再作成できず、クラスタの作成に失敗することがあります。
@@ -258,53 +259,34 @@ ssh 172.16.0.114 qm destroy 1103 --destroy-unreferenced-disks true --purge true
 
 上記事象に遭遇した場合は、以下**いずれか**の方法で解決を試みてください。
 
- - 残った仮想ディスクデバイスを手動で削除する
+ 1. 残った仮想ディスクデバイスを手動で削除する
 
     1. クラスタを構成するVMが一部でも存在する場合は、事前にクラスタの削除を実施してください。
 
     1. その後、**proxmoxをホストしている物理マシンのターミナル上で**次のコマンドを実行し、残ったデバイスを削除します。
 
-       ```sh
-       for host in 172.16.0.111 172.16.0.113 172.16.0.114 ; do
-         ssh $host dmsetup remove vg01-vm--1101--cloudinit
-         ssh $host dmsetup remove vg01-vm--1102--cloudinit
-         ssh $host dmsetup remove vg01-vm--1103--cloudinit
+        ```sh
+        for host in 172.16.0.111 172.16.0.113 172.16.0.114 ; do
+          ssh $host dmsetup remove vg01-vm--1101--cloudinit
+          ssh $host dmsetup remove vg01-vm--1102--cloudinit
+          ssh $host dmsetup remove vg01-vm--1103--cloudinit
 
-         ssh $host dmsetup remove vg01-vm--1001--cloudinit
-         ssh $host dmsetup remove vg01-vm--1002--cloudinit
-         ssh $host dmsetup remove vg01-vm--1003--cloudinit
+          ssh $host dmsetup remove vg01-vm--1001--cloudinit
+          ssh $host dmsetup remove vg01-vm--1002--cloudinit
+          ssh $host dmsetup remove vg01-vm--1003--cloudinit
 
-         ssh $host dmsetup remove vg01-vm--1101--disk--0
-         ssh $host dmsetup remove vg01-vm--1102--disk--0
-         ssh $host dmsetup remove vg01-vm--1103--disk--0
+          ssh $host dmsetup remove vg01-vm--1101--disk--0
+          ssh $host dmsetup remove vg01-vm--1102--disk--0
+          ssh $host dmsetup remove vg01-vm--1103--disk--0
 
-         ssh $host dmsetup remove vg01-vm--1001--disk--0
-         ssh $host dmsetup remove vg01-vm--1002--disk--0
-         ssh $host dmsetup remove vg01-vm--1003--disk--0
-       done
-       ```
+          ssh $host dmsetup remove vg01-vm--1001--disk--0
+          ssh $host dmsetup remove vg01-vm--1002--disk--0
+          ssh $host dmsetup remove vg01-vm--1003--disk--0
+        done
+        ```
 
-   参考: [cannot migrate - device-mapper:create ioctl on cluster failed - proxmox forum](https://forum.proxmox.com/threads/cannot-migrate-device-mapper-create-ioctl-on-cluster-failed.12221/)
+    参考: [cannot migrate - device-mapper:create ioctl on cluster failed - proxmox forum](https://forum.proxmox.com/threads/cannot-migrate-device-mapper-create-ioctl-on-cluster-failed.12221/)
 
- - 全proxmoxホストを再起動する
+ 1. 全proxmoxホストを再起動する
 
-   proxmoxホスト上の全てのVMの停止を伴うため、サービス提供中の本番環境では推奨されません。
-
-
-## etc
-
-- 起動用コマンドめも
-
-```sh
-## on unchama-tst-prox01
-ssh 172.16.0.111 qm start 1001
-ssh 172.16.0.111 qm start 1101
-
-## on unchama-tst-prox03
-ssh 172.16.0.113 qm start 1002
-ssh 172.16.0.113 qm start 1102
-
-## on unchama-tst-prox04
-ssh 172.16.0.114 qm start 1003
-ssh 172.16.0.114 qm start 1103
-```
+    proxmoxホスト上の全てのVMの停止を伴うため、サービス提供中の本番環境では推奨されません。
