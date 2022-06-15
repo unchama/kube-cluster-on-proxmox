@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# region00 : set variables
+# region : set variables
 
 TARGET_BRANCH=$1
 TEMPLATE_VMID=9050
@@ -20,11 +20,11 @@ VM_LIST=(
     "1103 unc-k8s-wk-3 4    12288 unchama-tst-prox04"
 )
 
-# end region
+# endregion
 
 # ---
 
-# region01 : create-template
+# region : create template-vm
 
 # download the image(ubuntu 20.04 LTS)
 wget https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
@@ -55,11 +55,11 @@ qm template $TEMPLATE_VMID
 # cleanup
 rm focal-server-cloudimg-amd64.img
 
-# end region
+# endregion
 
 # ---
 
-# region02 : create vm from template
+# region : setup vm from template-vm
 
 for array in "${VM_LIST[@]}"
 do
@@ -132,4 +132,4 @@ do
     done
 done
 
-# end region
+# endregion
