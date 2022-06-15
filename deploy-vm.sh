@@ -11,13 +11,13 @@ SNIPPET_TARGET_VOLUME=unchama-tst-prox-bkup01
 SNIPPET_TARGET_PATH=/mnt/pve/${SNIPPET_TARGET_VOLUME}/snippets
 REPOSITORY_RAW_SOURCE_URL="https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/${TARGET_BRANCH}"
 VM_LIST=(
-    #vmid #vmname      #cpu #mem  #targetnode
-    "1001 unc-k8s-cp-1 2    8192  unchama-tst-prox01"
-    "1002 unc-k8s-cp-2 2    8192  unchama-tst-prox03"
-    "1003 unc-k8s-cp-3 2    8192  unchama-tst-prox04"
-    "1101 unc-k8s-wk-1 4    12288 unchama-tst-prox01"
-    "1102 unc-k8s-wk-2 4    12288 unchama-tst-prox03"
-    "1103 unc-k8s-wk-3 4    12288 unchama-tst-prox04"
+    #vmid #vmname      #cpu #mem  #targetip    #targethost
+    "1001 unc-k8s-cp-1 2    8192  172.16.16.111 unchama-tst-prox01"
+    "1002 unc-k8s-cp-2 2    8192  172.16.16.113 unchama-tst-prox03"
+    "1003 unc-k8s-cp-3 2    8192  172.16.16.114 unchama-tst-prox04"
+    "1101 unc-k8s-wk-1 4    12288 172.16.16.111 unchama-tst-prox01"
+    "1102 unc-k8s-wk-2 4    12288 172.16.16.113 unchama-tst-prox03"
+    "1103 unc-k8s-wk-3 4    12288 172.16.16.114 unchama-tst-prox04"
 )
 
 # endregion
@@ -63,20 +63,20 @@ rm focal-server-cloudimg-amd64.img
 
 for array in "${VM_LIST[@]}"
 do
-    echo "${array}" | while read -r vmid vmname cpu mem targetnode
+    echo "${array}" | while read -r vmid vmname cpu mem targetip targethost
     do
         # clone from template
         # in clone phase, can't create vm-disk to local volume
-        qm clone "${TEMPLATE_VMID}" "${vmid}" --name "${vmname}" --full true --target "${targetnode}"
+        qm clone "${TEMPLATE_VMID}" "${vmid}" --name "${vmname}" --full true --target "${targethost}"
         
         # set compute resources
-        ssh "${targetnode}" qm set "${vmid}" --cores "${cpu}" --memory "${mem}"
+        ssh "${targetip}" qm set "${vmid}" --cores "${cpu}" --memory "${mem}"
 
         # move vm-disk to local
-        ssh "${targetnode}" qm move-disk "${vmid}" scsi0 "${BOOT_IMAGE_TARGET_VOLUME}" --delete true
+        ssh "${targetip}" qm move-disk "${vmid}" scsi0 "${BOOT_IMAGE_TARGET_VOLUME}" --delete true
 
         # resize disk (Resize after cloning, because it takes time to clone a large disk)
-        ssh "${targetnode}" qm resize "${vmid}" scsi0 30G
+        ssh "${targetip}" qm resize "${vmid}" scsi0 30G
 
         # create snippet for cloud-init(user-config)
         # START irregular indent because heredoc
@@ -117,17 +117,17 @@ EOF
         curl -s "${REPOSITORY_RAW_SOURCE_URL}/snippets/${vmname}-network.yaml" > "${SNIPPET_TARGET_PATH}"/"${vmname}"-network.yaml
 
         # set snippet to vm
-        ssh "${targetnode}" qm set "${vmid}" --cicustom "user=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-user.yaml,network=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-network.yaml"
+        ssh "${targetip}" qm set "${vmid}" --cicustom "user=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-user.yaml,network=${SNIPPET_TARGET_VOLUME}:snippets/${vmname}-network.yaml"
 
     done
 done
 
 for array in "${VM_LIST[@]}"
 do
-    echo "${array}" | while read -r vmid vmname cpu mem targetnode
+    echo "${array}" | while read -r vmid vmname cpu mem targetip targethost
     do
         # start vm
-        ssh "${targetnode}" qm start "${vmid}"
+        ssh "${targetip}" qm start "${vmid}"
         
     done
 done
