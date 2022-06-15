@@ -4,6 +4,8 @@ set -eu
 
 # special thanks!: https://gist.github.com/inductor/32116c486095e5dde886b55ff6e568c8
 
+# region : script-usage
+
 function usage() {
     echo "usage> k8s-node-setup.sh [COMMAND]"
     echo "[COMMAND]:"
@@ -26,6 +28,10 @@ case $1 in
         exit 255
         ;;
 esac
+
+# endregion
+
+# region : set variables
 
 # Set global variables
 KUBE_API_SERVER_VIP=172.16.3.100
@@ -59,6 +65,10 @@ case $1 in
         exit 1
         ;;
 esac
+
+# endregion
+
+# region : setup for all-node
 
 # Install Containerd
 cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
@@ -126,6 +136,8 @@ image-endpoint: unix:///var/run/containerd/containerd.sock
 timeout: 10
 EOF
 
+# endregion
+
 # Ends except worker-plane
 case $1 in
     unc-k8s-wk-*)
@@ -137,6 +149,8 @@ case $1 in
         exit 1
         ;;
 esac
+
+# region : setup for first-control-plane node
 
 # Install HAProxy
 apt-get install -y --no-install-recommends software-properties-common
@@ -250,6 +264,8 @@ kubeadm config images pull
 # install k9s
 wget https://github.com/derailed/k9s/releases/download/v0.25.18/k9s_Linux_x86_64.tar.gz -O - | tar -zxvf - k9s && sudo mv ./k9s /usr/local/bin/
 
+# endregion
+
 # Ends except first-control-plane
 case $1 in
     unc-k8s-cp-1)
@@ -261,6 +277,8 @@ case $1 in
         exit 1
         ;;
 esac
+
+# region : setup for first-control-plane node
 
 # Set kubeadm bootstrap token using openssl
 KUBEADM_BOOTSTRAP_TOKEN=$(openssl rand -hex 3).$(openssl rand -hex 8)
@@ -392,3 +410,5 @@ export ANSIBLE_CONFIG="$HOME"/kube-cluster-on-proxmox/ansible/ansible.cfg
 ansible-galaxy role install -r "$HOME"/kube-cluster-on-proxmox/ansible/roles/requirements.yaml
 ansible-galaxy collection install -r "$HOME"/kube-cluster-on-proxmox/ansible/roles/requirements.yaml
 ansible-playbook -i "$HOME"/kube-cluster-on-proxmox/ansible/hosts/k8s-servers/inventory "$HOME"/kube-cluster-on-proxmox/ansible/site.yaml
+
+# endregion
