@@ -49,6 +49,8 @@ spec:
             - grafana-piechart-panel
           grafana.ini:
             server:
+              domain: localhost
+              root_url: 'https://%(domain)s'
               enforce_domain: false
             log:
               level: warn
