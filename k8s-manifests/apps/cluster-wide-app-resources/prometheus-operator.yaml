@@ -48,6 +48,8 @@ spec:
           plugins:
             - grafana-piechart-panel
           grafana.ini:
+            server:
+              enforce_domain: false
             log:
               level: warn
             date_formats:
