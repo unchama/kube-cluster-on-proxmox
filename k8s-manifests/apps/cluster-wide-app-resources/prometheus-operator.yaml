@@ -57,7 +57,7 @@ spec:
             date_formats:
               default_timezone: Asia/Tokyo
             security:
-              cookie_secure: true
+              cookie_secure: false
               strict_transport_security: true
               content_security_policy: true
           securityContext:
