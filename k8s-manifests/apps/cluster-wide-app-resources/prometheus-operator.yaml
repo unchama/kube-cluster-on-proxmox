@@ -50,7 +50,7 @@ spec:
           grafana.ini:
             server:
               domain: localhost
-              root_url: 'http://%(domain)s'
+              root_url: '%(protocol)s://%(domain)s:%(http_port)s'
               enforce_domain: false
             log:
               level: warn
