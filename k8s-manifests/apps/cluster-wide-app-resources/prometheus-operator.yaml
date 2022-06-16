@@ -1,0 +1,128 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-crd
+  namespace: argocd
+spec:
+  project: cluster-wide-apps
+  source:
+    repoURL: https://github.com/prometheus-community/helm-charts.git
+    path: charts/kube-prometheus-stack/crds/
+    targetRevision: kube-prometheus-stack-36.0.0
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - CreateNamespace=true
+    - Replace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # cascade deletion on this App deletion
+spec:
+  project: cluster-wide-apps
+  source:
+    chart: kube-prometheus-stack
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 36.0.1
+    helm:
+      releaseName: prometheus
+      skipCrds: true
+      values: |
+        defaultRules:
+          create: true
+          rules:
+            kubeProxy: false
+        grafana:
+          defaultDashboardsTimezone: Asia/Tokyo
+          plugins:
+            - grafana-piechart-panel
+          grafana.ini:
+            log:
+              level: warn
+            date_formats:
+              default_timezone: Asia/Tokyo
+            security:
+              cookie_secure: true
+              strict_transport_security: true
+              content_security_policy: true
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            runAsNonRoot: false
+            fsGroup: 472
+          deploymentStrategy:
+            type: Recreate
+          persistence:
+            enabled: true
+            size: 10Gi
+          datasources:
+            datasources.yaml:
+              apiVersion: 1
+              datasources:
+                - name: Prometheus
+                  type: prometheus
+                  url: http://prometheus-kube-prometheus-prometheus:9090
+                  isDefault: true
+                - name: Loki
+                  type: loki
+                  url: http://loki:3100
+        prometheus:
+          prometheusSpec:
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  resources:
+                    requests:
+                      storage: 50Gi
+            resources:
+              requests:
+                memory: 2Gi
+            securityContext:
+              runAsGroup: 0
+              runAsNonRoot: false
+              runAsUser: 0
+              fsGroup: 2000
+        alertmanager:
+          alertmanagerSpec:
+            storage:
+              volumeClaimTemplate:
+                spec:
+                  resources:
+                    requests:
+                      storage: 20Gi
+            securityContext:
+              runAsGroup: 0
+              runAsNonRoot: false
+              runAsUser: 0
+              fsGroup: 2000
+        kubeProxy:
+          enabled: false
+        kubeEtcd:
+          endpoints:
+            - 172.16.17.11
+            - 172.16.17.12
+            - 172.16.17.13
+          service:
+            enabled: true
+            port: 2381
+            targetPort: 2381
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - CreateNamespace=true
+    
