@@ -16,7 +16,7 @@ spec:
         app: minecraft-server
     spec:
       containers:
-      - image: itzg/minecraft-server:2022.6.0-java17-alpine
+      - image: itzg/minecraft-server:2022.8.0-java17-alpine
         name: minecraft-server
         env:
         - name: EULA
