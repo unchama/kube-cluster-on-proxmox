@@ -1,5 +1,15 @@
 {
   "extends": [
     "config:base"
-  ]
+  ],
+  "argocd": {
+    "fileMatch": [
+      "^k8s-manifests/apps/.+\\.yaml$"
+    ]
+  },
+  "kubernetes": {
+    "fileMatch": [
+      "^k8s-manifests/apps/.+\\.yaml$"
+    ]
+  }
 }
