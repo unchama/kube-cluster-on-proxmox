@@ -115,9 +115,9 @@ spec:
           enabled: false
         kubeEtcd:
           endpoints:
-            - 172.16.17.11
-            - 172.16.17.12
-            - 172.16.17.13
+            - 172.16.3.11
+            - 172.16.3.12
+            - 172.16.3.13
           service:
             enabled: true
             port: 2381
