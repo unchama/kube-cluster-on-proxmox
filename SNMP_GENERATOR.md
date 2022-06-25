@@ -39,6 +39,26 @@ modules:
       ifType:
         type: EnumAsInfo
 
+# NEC IX Router
+#
+# https://jpn.nec.com/univerge/ix/Manual/MIB/PICO-SMI-MIB.txt
+# https://jpn.nec.com/univerge/ix/Manual/MIB/PICO-SMI-ID-MIB.txt
+# https://jpn.nec.com/univerge/ix/Manual/MIB/PICO-IPSEC-FLOW-MONITOR-MIB.txt
+  nec_ix:
+    version: 2
+    auth:
+      community: SeichiNOCTestViewer
+    walk:
+      - picoSystem
+      - picoIpSecFlowMonitorMIB
+      - picoExtIfMIB
+      - picoNetworkMonitorMIB
+      - picoIsdnMIB
+      - picoNgnMIB
+      - picoMobileMIB
+      - picoIPv4MIB
+      - picoIPv6MIB
+
 # Synology
 #
 # Synology MIBs can be found here:
