@@ -10,7 +10,7 @@ spec:
     protocol: TCP
     targetPort: 9090
   selector:
-    app.kubernetes.io/instance: prometheus
+    prometheus: prometheus-kube-prometheus-prometheus
     app.kubernetes.io/name: prometheus
   type: LoadBalancer
   loadBalancerIP: 172.16.3.242
