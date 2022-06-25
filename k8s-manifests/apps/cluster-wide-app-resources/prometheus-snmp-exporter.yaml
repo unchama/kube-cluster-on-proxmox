@@ -25,7 +25,7 @@ spec:
         serviceMonitor:
           enabled: true
           params:
-            - name: TST-X510
+            - name: tst-x510
               target: 172.16.19.253
               module:
                 - if_mib
