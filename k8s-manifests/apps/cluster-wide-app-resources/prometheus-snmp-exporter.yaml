@@ -19,7 +19,7 @@ spec:
           - name: snmp-exporter-configmap
             mountPath: /run/secrets/snmp-exporter
             subPath: snmp.yaml
-            configMap: snmp-exporter-configmap-configmap
+            configMap: snmp-exporter-configmap
             readOnly: true
             defaultMode: 420
         serviceMonitor:
