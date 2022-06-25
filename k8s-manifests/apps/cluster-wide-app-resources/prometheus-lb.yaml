@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-lb
+  namespace: monitoring
+spec:
+  ports:
+  - name: http-web
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  selector:
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: prometheus
+  type: LoadBalancer
+  loadBalancerIP: 172.16.3.242
