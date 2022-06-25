@@ -130,4 +130,3 @@ spec:
       prune: true
     syncOptions:
     - CreateNamespace=true
-    
