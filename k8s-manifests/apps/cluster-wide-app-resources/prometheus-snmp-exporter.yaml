@@ -34,15 +34,6 @@ spec:
               scrapeTimeout: 30s
               relabelings: []
               additionalMetricsRelabels: {}
-            - name: DEV-SW
-              target: 172.16.19.252
-              module:
-                - if_mib
-              labels: {}
-              interval: 30s
-              scrapeTimeout: 30s
-              relabelings: []
-              additionalMetricsRelabels: {}
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
