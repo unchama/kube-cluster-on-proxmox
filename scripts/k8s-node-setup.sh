@@ -150,7 +150,7 @@ case $1 in
         ;;
 esac
 
-# region : setup for first-control-plane node
+# region : setup for all-control-plane node
 
 # Install HAProxy
 apt-get install -y --no-install-recommends software-properties-common
