@@ -17,7 +17,7 @@ spec:
       values: |
         extraConfigmapMounts:
           - name: snmp-exporter-configmap
-            mountPath: /run/secrets/snmp-exporter
+            mountPath: /etc/snmp_exporter/snmp-exporter
             subPath: snmp.yaml
             configMap: snmp-exporter-configmap
             readOnly: true
