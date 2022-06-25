@@ -18,7 +18,7 @@ spec:
         extraConfigmapMounts:
           - name: snmp-exporter-configmap
             mountPath: /etc/snmp_exporter
-            subPath: snmp.yaml
+            subPath: snmp.yml
             configMap: snmp-exporter-configmap
             readOnly: true
             defaultMode: 420
