@@ -304,6 +304,12 @@ controlPlaneEndpoint: "${KUBE_API_SERVER_VIP}:8443"
 apiServer:
   certSANs:
   - "${EXTERNAL_KUBE_API_SERVER}" # generate random FQDN to prevent malicious DoS attack
+controllerManager:
+  extraArgs:
+    bind-address: "0.0.0.0"
+scheduler:
+  extraArgs:
+    bind-address: "0.0.0.0"
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
