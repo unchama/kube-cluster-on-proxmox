@@ -26,7 +26,7 @@ spec:
           enabled: true
           params:
             - name: tst-x510
-              target: 172.16.15.253
+              target: 172.16.19.253
               module:
                 - if_mib
               labels:
