@@ -4,7 +4,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
 
 ## 前提条件
 
-- Proxmox Virtual Environment 7.1-11
+- Proxmox Virtual Environment 7.2-4
   - ベアメタル3ノード
   - クラスタ構成済みであること
     - クラスタ構成にすると、proxmoxホスト間でrootユーザーによるSSH接続が可能となります。
@@ -14,7 +14,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
       参考: [Role of SSH in Proxmox VE Clusters - proxmox wiki](https://pve.proxmox.com/wiki/Cluster_Manager#_role_of_ssh_in_proxmox_ve_clusters)
 - Synology NAS(DS1621+)
   - 共有ストレージとして利用
-- Ubuntu 20.04 LTS (cloud-init image)
+- Ubuntu 22.04 LTS (cloud-init image)
   - kubernetes VMのベースとして使用
 - Network Addressing(うんちゃま自宅検証環境)
   - Service Network Segment (172.16.0.0/20)
