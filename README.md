@@ -4,7 +4,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
 
 ## 前提条件
 
-- Proxmox Virtual Environment 7.1-11
+- Proxmox Virtual Environment 7.2-4
   - ベアメタル3ノード
   - クラスタ構成済みであること
     - クラスタ構成にすると、proxmoxホスト間でrootユーザーによるSSH接続が可能となります。
