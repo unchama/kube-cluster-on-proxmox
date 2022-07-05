@@ -140,12 +140,47 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
 
     # cloudinitの実行ログチェック(トラブルシュート用)
     # だいたいのスクリプトは unc-k8s-cp-1で動いてます
+
+    ## check /var/log/cloud-init-output.log
     ssh unc-k8s-cp-1 "sudo cat /var/log/cloud-init-output.log"
     ssh unc-k8s-cp-2 "sudo cat /var/log/cloud-init-output.log"
     ssh unc-k8s-cp-3 "sudo cat /var/log/cloud-init-output.log"
     ssh unc-k8s-wk-1 "sudo cat /var/log/cloud-init-output.log"
     ssh unc-k8s-wk-2 "sudo cat /var/log/cloud-init-output.log"
     ssh unc-k8s-wk-3 "sudo cat /var/log/cloud-init-output.log"
+
+    ## cloud-init.service - Initial cloud-init job (metadata service crawler)
+    ssh unc-k8s-cp-1 "sudo journalctl -u cloud-init.service"
+    ssh unc-k8s-cp-2 "sudo journalctl -u cloud-init.service"
+    ssh unc-k8s-cp-3 "sudo journalctl -u cloud-init.service"
+    ssh unc-k8s-wk-1 "sudo journalctl -u cloud-init.service"
+    ssh unc-k8s-wk-2 "sudo journalctl -u cloud-init.service"
+    ssh unc-k8s-wk-3 "sudo journalctl -u cloud-init.service"
+
+    ## cloud-init-local.service - Initial cloud-init job (pre-networking)
+    ssh unc-k8s-cp-1 "sudo journalctl -u cloud-init-local.service"
+    ssh unc-k8s-cp-2 "sudo journalctl -u cloud-init-local.service"
+    ssh unc-k8s-cp-3 "sudo journalctl -u cloud-init-local.service"
+    ssh unc-k8s-wk-1 "sudo journalctl -u cloud-init-local.service"
+    ssh unc-k8s-wk-2 "sudo journalctl -u cloud-init-local.service"
+    ssh unc-k8s-wk-3 "sudo journalctl -u cloud-init-local.service"
+
+    ## cloud-config.service - Apply the settings specified in cloud-config
+    ssh unc-k8s-cp-1 "sudo journalctl -u cloud-config.service"
+    ssh unc-k8s-cp-2 "sudo journalctl -u cloud-config.service"
+    ssh unc-k8s-cp-3 "sudo journalctl -u cloud-config.service"
+    ssh unc-k8s-wk-1 "sudo journalctl -u cloud-config.service"
+    ssh unc-k8s-wk-2 "sudo journalctl -u cloud-config.service"
+    ssh unc-k8s-wk-3 "sudo journalctl -u cloud-config.service"
+
+    ## cloud-final.service - Execute cloud user/final scripts
+    ## k8s-node-setup.sh などのログはここにあります
+    ssh unc-k8s-cp-1 "sudo journalctl -u cloud-final.service"
+    ssh unc-k8s-cp-2 "sudo journalctl -u cloud-final.service"
+    ssh unc-k8s-cp-3 "sudo journalctl -u cloud-final.service"
+    ssh unc-k8s-wk-1 "sudo journalctl -u cloud-final.service"
+    ssh unc-k8s-wk-2 "sudo journalctl -u cloud-final.service"
+    ssh unc-k8s-wk-3 "sudo journalctl -u cloud-final.service"
     ```
 
  1. Enjoy ;)
