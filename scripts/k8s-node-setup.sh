@@ -294,6 +294,8 @@ bootstrapTokens:
   ttl: "24h"
 nodeRegistration:
   criSocket: "unix:///var/run/containerd/containerd.sock"
+  kubeletExtraArgs:
+    feature-gates: "DelegateFSGroupToCSIDriver=false"
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
@@ -305,12 +307,16 @@ controlPlaneEndpoint: "${KUBE_API_SERVER_VIP}:8443"
 apiServer:
   certSANs:
   - "${EXTERNAL_KUBE_API_SERVER}" # generate random FQDN to prevent malicious DoS attack
+  extraArgs:
+    feature-gates: "DelegateFSGroupToCSIDriver=false"
 controllerManager:
   extraArgs:
     bind-address: "0.0.0.0"
+    feature-gates: "DelegateFSGroupToCSIDriver=false"
 scheduler:
   extraArgs:
     bind-address: "0.0.0.0"
+    feature-gates: "DelegateFSGroupToCSIDriver=false"
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
@@ -374,6 +380,8 @@ apiVersion: kubeadm.k8s.io/v1beta3
 kind: JoinConfiguration
 nodeRegistration:
   criSocket: "unix:///var/run/containerd/containerd.sock"
+  kubeletExtraArgs:
+    feature-gates: "DelegateFSGroupToCSIDriver=false"
 discovery:
   bootstrapToken:
     apiServerEndpoint: "${KUBE_API_SERVER_VIP}:8443"
@@ -394,6 +402,8 @@ apiVersion: kubeadm.k8s.io/v1beta3
 kind: JoinConfiguration
 nodeRegistration:
   criSocket: "unix:///var/run/containerd/containerd.sock"
+  kubeletExtraArgs:
+    feature-gates: "DelegateFSGroupToCSIDriver=false"
 discovery:
   bootstrapToken:
     apiServerEndpoint: "${KUBE_API_SERVER_VIP}:8443"
