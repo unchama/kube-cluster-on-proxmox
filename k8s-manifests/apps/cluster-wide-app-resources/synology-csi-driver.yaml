@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/SynologyOpenSource/synology-csi.git
     path: deploy/kubernetes/v1.20
-    targetRevision: v1.1.0
+    targetRevision: v1.1.1
     directory:
       recurse: true
   ignoreDifferences:
