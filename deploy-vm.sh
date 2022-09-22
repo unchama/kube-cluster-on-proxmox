@@ -119,6 +119,8 @@ runcmd:
   # run install scripts
   - su - cloudinit -c "curl -s ${REPOSITORY_RAW_SOURCE_URL}/scripts/k8s-node-setup.sh > ~/k8s-node-setup.sh"
   - su - cloudinit -c "sudo bash ~/k8s-node-setup.sh ${vmname}"
+  # change default shell to bash
+  - chsh -s $(which bash) cloudinit
 EOF
 # ----- #
         # END irregular indent because heredoc
