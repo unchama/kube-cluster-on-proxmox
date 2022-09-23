@@ -34,6 +34,7 @@ esac
 # region : set variables
 
 # Set global variables
+TARGET_BRANCH=$2
 KUBE_API_SERVER_VIP=172.16.3.100
 VIP_INTERFACE=ens19
 NODE_IPS=( 172.16.3.11 172.16.3.12 172.16.3.13 )
@@ -334,6 +335,9 @@ mkdir -p "$HOME"/.kube
 cp -i /etc/kubernetes/admin.conf "$HOME"/.kube/config
 chown "$(id -u)":"$(id -g)" "$HOME"/.kube/config
 
+# クラスタ初期セットアップ時に helm　を使用して CNI と ArgoCD をクラスタに導入する
+# それ以外のクラスタリソースは ArgoCD によって本リポジトリから自動で導入される
+
 # Install Helm CLI
 curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
@@ -348,9 +352,15 @@ helm install cilium cilium/cilium \
 # Install ArgoCD Helm chart
 helm repo add argo https://argoproj.github.io/argo-helm
 helm install argocd argo/argo-cd \
+    --version 5.5.4 \
     --create-namespace \
     --namespace argocd \
-    --values https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/main/k8s-manifests/argocd-helm-chart-values.yaml
+    --values https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/"${TARGET_BRANCH}"/k8s-manifests/argocd-helm-chart-values.yaml
+helm install argocd argo/argo-cd-apps \
+    --version 0.0.1 \
+    --namespace argocd \
+    --values https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/"${TARGET_BRANCH}"/k8s-manifests/argocd-apps-helm-chart-values.yaml
+
 
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
@@ -420,8 +430,7 @@ EOF
 sudo apt-get install -y ansible git sshpass
 
 # clone repo
-# TODO mainブランチ決め打ちになっちゃってるので引数で変更できるようにする
-git clone -b main https://github.com/unchama/kube-cluster-on-proxmox.git "$HOME"/kube-cluster-on-proxmox
+git clone -b "${TARGET_BRANCH}" https://github.com/unchama/kube-cluster-on-proxmox.git "$HOME"/kube-cluster-on-proxmox
 
 # export ansible.cfg target
 export ANSIBLE_CONFIG="$HOME"/kube-cluster-on-proxmox/ansible/ansible.cfg
