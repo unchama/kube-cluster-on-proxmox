@@ -1,0 +1,27 @@
+# Config values for the ArgoCD Helm Chart.
+# For default values, see
+# https://github.com/argoproj/argo-helm/blob/07d63255ae19ff1e08a22e71c932f686f8f619ac/charts/argocd-apps/Chart.yaml
+applications:
+  - name: argocd-root-app-of-apps
+    namespace: argocd
+    project: argocd-root
+    source:
+      repoURL: https://github.com/unchama/kube-cluster-on-proxmox
+      targetRevision: main
+      path: k8s-manifests/apps/root
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: argocd
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+        allowEmpty: true
+      syncOptions:
+        - CreateNamespace=true
+      retry:
+        limit: -1
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 2m
