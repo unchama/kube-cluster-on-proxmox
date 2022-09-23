@@ -359,7 +359,7 @@ helm install argocd argo/argo-cd \
 helm install argocd argo/argo-cd-apps \
     --version 0.0.1 \
     --namespace argocd \
-    --values https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/${TARGET_BRANCH}/k8s-manifests/argocd-apps-helm-chart-values.yaml
+    --values https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/"${TARGET_BRANCH}"/k8s-manifests/argocd-apps-helm-chart-values.yaml
 
 
 cat <<EOF | kubectl apply -f -
