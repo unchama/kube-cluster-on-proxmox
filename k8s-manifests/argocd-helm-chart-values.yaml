@@ -21,18 +21,6 @@ server:
     enabled: true
     minAvailable: 1
     maxUnavailable: 0
-  additionalProjects:
-    - name: argocd-root
-      namespace: argocd
-      description: The top-level project
-      sourceRepos:
-        - "*"
-      destinations:
-        - namespace: "*"
-          server: https://kubernetes.default.svc
-      clusterResourceWhitelist:
-        - group: "*"
-          kind: "*"
 
   configEnabled: true
   # -- [General Argo CD configuration]

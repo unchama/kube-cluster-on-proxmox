@@ -25,3 +25,15 @@ applications:
           duration: 5s
           factor: 2
           maxDuration: 2m
+projects:
+  - name: argocd-root
+    namespace: argocd
+    description: The top-level project
+    sourceRepos:
+      - "*"
+    destinations:
+      - namespace: "*"
+        server: https://kubernetes.default.svc
+    clusterResourceWhitelist:
+      - group: "*"
+        kind: "*"
