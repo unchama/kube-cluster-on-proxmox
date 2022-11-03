@@ -23,6 +23,36 @@ spec:
               interval: 60s
               scrapeTimeout: 60s
               module: icmp
+            - name: uncahama-tst-prox01_service
+              url: 172.16.0.111
+              interval: 60s
+              scrapeTimeout: 60s
+              module: icmp
+            - name: uncahama-tst-prox03_service
+              url: 172.16.0.113
+              interval: 60s
+              scrapeTimeout: 60s
+              module: icmp
+            - name: uncahama-tst-prox04_service
+              url: 172.16.0.114
+              interval: 60s
+              scrapeTimeout: 60s
+              module: icmp
+            - name: uncahama-tst-prox01_storage
+              url: 172.16.16.111
+              interval: 60s
+              scrapeTimeout: 60s
+              module: icmp
+            - name: uncahama-tst-prox03_storage
+              url: 172.16.16.113
+              interval: 60s
+              scrapeTimeout: 60s
+              module: icmp
+            - name: uncahama-tst-prox04_storage
+              url: 172.16.16.114
+              interval: 60s
+              scrapeTimeout: 60s
+              module: icmp
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
