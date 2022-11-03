@@ -22,7 +22,8 @@ spec:
             http_2xx_insecure:
               prober: http
               http:
-                insecure_skip_verify: true
+                tls_config:
+                  insecure_skip_verify: true
             http_post_2xx:
               prober: http
               http:
