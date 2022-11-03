@@ -19,6 +19,10 @@ spec:
           modules:
             http_2xx:
               prober: http
+            http_2xx_insecure:
+              prober: http
+              http:
+                insecure_skip_verify: true
             http_post_2xx:
               prober: http
               http:
@@ -58,8 +62,23 @@ spec:
                 - expect: "PING :([^ ]+)"
                   send: "PONG ${1}"
                 - expect: "^:[^ ]+ 001"
+            dns:
+              prober: dns
             icmp:
               prober: icmp
+            icmp_v4:
+              prober: icmp
+              icmp:
+                preferred_ip_protocol: ip4
+            icmp_v6:
+              prober: icmp
+              icmp:
+                preferred_ip_protocol: ip6
+            icmp_jumbo:
+              prober: icmp
+              icmp:
+                dont_fragment: true
+                payload_size: 8972
             icmp_ttl5:
               prober: icmp
               timeout: 5s
@@ -73,36 +92,36 @@ spec:
             interval: 10s
             scrapeTimeout: 10s
           targets:
-            - name: google-public-dns
-              url: 8.8.8.8
-              module: icmp
+            - name: dns.google
+              url: dns.google
+              module: icmp_v4
             - name: uncahama-tst-prox01-service
               url: 172.16.0.111
-              module: icmp
+              module: icmp_v4
             - name: uncahama-tst-prox03-service
               url: 172.16.0.113
-              module: icmp
+              module: icmp_v4
             - name: uncahama-tst-prox04-service
               url: 172.16.0.114
-              module: icmp
+              module: icmp_v4
             - name: uncahama-tst-prox01-storage
               url: 172.16.16.111
-              module: icmp
+              module: icmp_v4
             - name: uncahama-tst-prox03-storage
               url: 172.16.16.113
-              module: icmp
+              module: icmp_v4
             - name: uncahama-tst-prox04-storage
               url: 172.16.16.114
-              module: icmp
+              module: icmp_v4
             - name: uncahama-tst-prox01-service-web-panel
               url: https://172.16.0.111:8006
-              module: http_2xx
+              module: http_2xx_insecure
             - name: uncahama-tst-prox03-service-web-panel
               url: https://172.16.0.113:8006
-              module: http_2xx
+              module: http_2xx_insecure
             - name: uncahama-tst-prox04-service-web-panel
               url: https://172.16.0.114:8006
-              module: http_2xx
+              module: http_2xx_insecure
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
