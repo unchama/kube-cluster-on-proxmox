@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-blackbox-exporter
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # cascade deletion on this App deletion
+spec:
+  project: cluster-wide-apps
+  source:
+    chart: prometheus-blackbox-exporter
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 7.1.3
+    helm:
+      releaseName: prometheus-blackbox-exporter
+      # https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-blackbox-exporter/values.yaml
+      values: |
+        serviceMonitor:
+          enabled: true
+          targets:
+            - name: google-public-dns
+              url: 8.8.8.8
+              interval: 60s
+              scrapeTimeout: 60s
+              module: icmp
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - CreateNamespace=true
