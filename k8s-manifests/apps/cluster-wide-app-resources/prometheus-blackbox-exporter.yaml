@@ -23,32 +23,32 @@ spec:
               interval: 60s
               scrapeTimeout: 60s
               module: icmp
-            - name: uncahama-tst-prox01_service
+            - name: uncahama-tst-prox01-service
               url: 172.16.0.111
               interval: 60s
               scrapeTimeout: 60s
               module: icmp
-            - name: uncahama-tst-prox03_service
+            - name: uncahama-tst-prox03-service
               url: 172.16.0.113
               interval: 60s
               scrapeTimeout: 60s
               module: icmp
-            - name: uncahama-tst-prox04_service
+            - name: uncahama-tst-prox04-service
               url: 172.16.0.114
               interval: 60s
               scrapeTimeout: 60s
               module: icmp
-            - name: uncahama-tst-prox01_storage
+            - name: uncahama-tst-prox01-storage
               url: 172.16.16.111
               interval: 60s
               scrapeTimeout: 60s
               module: icmp
-            - name: uncahama-tst-prox03_storage
+            - name: uncahama-tst-prox03-storage
               url: 172.16.16.113
               interval: 60s
               scrapeTimeout: 60s
               module: icmp
-            - name: uncahama-tst-prox04_storage
+            - name: uncahama-tst-prox04-storage
               url: 172.16.16.114
               interval: 60s
               scrapeTimeout: 60s
