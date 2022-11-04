@@ -123,6 +123,48 @@ spec:
             - name: uncahama-tst-prox04-service-web-panel
               url: https://172.16.0.114:8006
               module: http_2xx_insecure
+            - name: uncahama-tst-prox01-storage-web-panel
+              url: https://172.16.16.111:8006
+              module: http_2xx_insecure
+            - name: uncahama-tst-prox03-storage-web-panel
+              url: https://172.16.16.113:8006
+              module: http_2xx_insecure
+            - name: uncahama-tst-prox04-storage-web-panel
+              url: https://172.16.16.114:8006
+              module: http_2xx_insecure
+            - name: mc-play-debug-seichi-click
+              url: play-debug.seichi.click:25565
+              module: tcp_connect
+            - name: mc-play-seichi-click
+              url: play.seichi.click:25565
+              module: tcp_connect
+            - name: h1-map-spring-seichi-click
+              url: https://h1.map.spring.seichi.click
+              module: http_2xx
+            - name: ranking-gigantic-seichi-click
+              url: https://ranking-gigantic.seichi.click
+              module: http_2xx
+            - name: redmine-seichi-click
+              url: https://redmine.seichi.click
+              module: http_2xx
+            - name: s1-map-gigantic-seichi-click
+              url: https://s1.map.gigantic.seichi.click
+              module: http_2xx
+            - name: s2-map-gigantic-seichi-click
+              url: https://s2.map.gigantic.seichi.click
+              module: http_2xx
+            - name: s3-map-gigantic-seichi-click
+              url: https://s3.map.gigantic.seichi.click
+              module: http_2xx
+            - name: s5-map-gigantic-seichi-click
+              url: https://s5.map.gigantic.seichi.click
+              module: http_2xx
+            - name: s7-map-gigantic-seichi-click
+              url: https://s7.map.gigantic.seichi.click
+              module: http_2xx
+            - name: www-seichi-network
+              url: https://www.seichi.network
+              module: http_2xx
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
