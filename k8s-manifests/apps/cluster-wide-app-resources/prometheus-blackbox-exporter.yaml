@@ -96,8 +96,8 @@ spec:
           defaults:
             labels:
               release: prometheus
-            interval: 10s
-            scrapeTimeout: 10s
+            interval: 5s
+            scrapeTimeout: 5s
           targets:
             - name: dns.google
               url: dns.google
