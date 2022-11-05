@@ -67,24 +67,30 @@ spec:
               prober: dns
             icmp:
               prober: icmp
+              icmp:
+                source_ip_address: 127.0.0.1
             icmp_v4:
               prober: icmp
               icmp:
                 preferred_ip_protocol: ip4
+                source_ip_address: 127.0.0.1
             icmp_v6:
               prober: icmp
               icmp:
                 preferred_ip_protocol: ip6
+                source_ip_address: 127.0.0.1
             icmp_jumbo:
               prober: icmp
               icmp:
                 dont_fragment: true
                 payload_size: 8972
+                source_ip_address: 127.0.0.1
             icmp_ttl5:
               prober: icmp
               timeout: 5s
               icmp:
                 ttl: 5
+                source_ip_address: 127.0.0.1
         serviceMonitor:
           enabled: true
           defaults:
