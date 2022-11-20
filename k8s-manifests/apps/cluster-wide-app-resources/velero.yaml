@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: velero
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # cascade deletion on this App deletion
+spec:
+  project: cluster-wide-apps
+  source:
+    chart: velero
+    repoURL: https://vmware-tanzu.github.io/helm-charts
+    # https://github.com/vmware-tanzu/helm-charts/blob/38f97dee5a4b03fa4d431176cc588a4946d9ec52/charts/velero/Chart.yaml#L6
+    targetRevision: 2.32.2
+    helm:
+      releaseName: velero
+      # https://github.com/vmware-tanzu/helm-charts/blob/main/charts/velero/values.yaml
+      values: |
+        serviceMonitor:
+          enabled: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: backup
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - CreateNamespace=true
