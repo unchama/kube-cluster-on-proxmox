@@ -237,7 +237,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
     cat > $config_file <<EOF
     ---
     clients:
-      - host: 172.16.16.240
+      - host: 172.16.15.245
         port: 5000
         https: false
         username: ${csi_user}
