@@ -37,7 +37,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
     - VMの起動
       - 練り込んだcloud-configにより各VM上で[./scripts/k8s-node-setup.sh](/scripts/k8s-node-setup.sh)が実行される
   - [./scripts/k8s-node-setup.sh](/scripts/k8s-node-setup.sh)で導入しているもの
-    - kubelet,kubeadm,kubectl v1.24.0
+    - kubelet,kubeadm,kubectl v1.27.1
     - haproxy,keepalived(kubernetes apiのエンドポイント用)
     - helm install
       - cillium (Container Network Interface)

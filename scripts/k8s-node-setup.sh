@@ -126,10 +126,10 @@ EOF
 sysctl --system
 
 # Install kubeadm
-curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 apt-get update
-apt-get install -y kubelet=1.24.4-00 kubeadm=1.24.4-00 kubectl=1.24.4-00
+apt-get install -y kubelet=1.27.1-00 kubeadm=1.27.1-00 kubectl=1.27.1-00
 apt-mark hold kubelet kubeadm kubectl
 
 # Disable swap
@@ -267,7 +267,7 @@ systemctl reload haproxy
 kubeadm config images pull
 
 # install k9s
-wget https://github.com/derailed/k9s/releases/download/v0.25.18/k9s_Linux_x86_64.tar.gz -O - | tar -zxvf - k9s && sudo mv ./k9s /usr/local/bin/
+wget https://github.com/derailed/k9s/releases/download/v0.27.4/k9s_Linux_amd64.tar.gz -O - | tar -zxvf - k9s && sudo mv ./k9s /usr/local/bin/
 
 # endregion
 
@@ -298,29 +298,23 @@ bootstrapTokens:
   ttl: "24h"
 nodeRegistration:
   criSocket: "unix:///var/run/containerd/containerd.sock"
-  kubeletExtraArgs:
-    feature-gates: "DelegateFSGroupToCSIDriver=false"
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
 networking:
   serviceSubnet: "10.96.0.0/16"
   podSubnet: "10.128.0.0/16"
-kubernetesVersion: "v1.24.0"
+kubernetesVersion: "v1.27.1"
 controlPlaneEndpoint: "${KUBE_API_SERVER_VIP}:8443"
 apiServer:
   certSANs:
   - "${EXTERNAL_KUBE_API_SERVER}" # generate random FQDN to prevent malicious DoS attack
-  extraArgs:
-    feature-gates: "DelegateFSGroupToCSIDriver=false"
 controllerManager:
   extraArgs:
     bind-address: "0.0.0.0"
-    feature-gates: "DelegateFSGroupToCSIDriver=false"
 scheduler:
   extraArgs:
     bind-address: "0.0.0.0"
-    feature-gates: "DelegateFSGroupToCSIDriver=false"
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
@@ -392,8 +386,6 @@ apiVersion: kubeadm.k8s.io/v1beta3
 kind: JoinConfiguration
 nodeRegistration:
   criSocket: "unix:///var/run/containerd/containerd.sock"
-  kubeletExtraArgs:
-    feature-gates: "DelegateFSGroupToCSIDriver=false"
 discovery:
   bootstrapToken:
     apiServerEndpoint: "${KUBE_API_SERVER_VIP}:8443"
@@ -414,8 +406,6 @@ apiVersion: kubeadm.k8s.io/v1beta3
 kind: JoinConfiguration
 nodeRegistration:
   criSocket: "unix:///var/run/containerd/containerd.sock"
-  kubeletExtraArgs:
-    feature-gates: "DelegateFSGroupToCSIDriver=false"
 discovery:
   bootstrapToken:
     apiServerEndpoint: "${KUBE_API_SERVER_VIP}:8443"
