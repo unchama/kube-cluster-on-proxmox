@@ -54,8 +54,8 @@ spec:
               scrapeTimeout: 30s
               relabelings: []
               additionalMetricsRelabels: {}
-            - name: seichi-cloud
-              target: 172.16.16.240
+            - name: chamanas04
+              target: 172.16.15.245
               module:
                 - synology
               labels:

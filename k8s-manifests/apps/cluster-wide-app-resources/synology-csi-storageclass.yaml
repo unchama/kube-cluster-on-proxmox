@@ -6,7 +6,7 @@ metadata:
     storageclass.kubernetes.io/is-default-class: "true"
 provisioner: csi.san.synology.com
 parameters:
-  dsm: '172.16.16.240'
+  dsm: '172.16.15.245'
   location: '/volume1'
   fsType: 'ext4'
 reclaimPolicy: Retain
