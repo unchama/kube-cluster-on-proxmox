@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minio-for-velero
+  namespace: argocd
+spec:
+  project: cluster-wide-apps
+  source:
+    chart: minio
+    repoURL: https://charts.min.io/
+    targetRevision: 5.0.10
+    helm:
+      releaseName: velero-backup-store
+      # https://github.com/minio/minio/blob/master/helm/minio/values.yaml
+      values: |
+        mode: standalone
+        replicas: 1
+        persistence:
+          size: 5Gi
+        DeploymentUpdate:
+          type: Recreate
+        resources:
+          requests:
+            memory: 1Gi
+        existingSecret: "minio-for-velero-root-user"
+        metrics:
+          serviceMonitor:
+            enabled: true
+            additionalLabels:
+              release: prometheus
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: minio-for-velero
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: minio-for-velero-root-user
+  namespace: minio-for-velero
+type: Opaque
+data:
+  rootUser: iamrootuser
+  rootPassword: t0p-Secret

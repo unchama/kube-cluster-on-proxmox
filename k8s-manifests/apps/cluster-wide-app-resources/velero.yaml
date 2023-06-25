@@ -10,14 +10,32 @@ spec:
   source:
     chart: velero
     repoURL: https://vmware-tanzu.github.io/helm-charts
-    # https://github.com/vmware-tanzu/helm-charts/blob/38f97dee5a4b03fa4d431176cc588a4946d9ec52/charts/velero/Chart.yaml#L6
-    targetRevision: 2.32.6
+    # https://github.com/vmware-tanzu/helm-charts/blob/main/charts/velero/Chart.yaml#L6
+    targetRevision: 4.0.3
     helm:
       releaseName: velero
       # https://github.com/vmware-tanzu/helm-charts/blob/main/charts/velero/values.yaml
       values: |
-        serviceMonitor:
-          enabled: true
+        metrics:
+          serviceMonitor:
+            enabled: true
+        cleanUpCRDs: true
+        configuration:
+          backupStorageLocation:
+          - name: default
+            provider: aws
+            accessMode: ReadWrite
+            credential:
+              name: velero-for-minio-access-credential
+              key: credentials-velero
+            config:
+              region: minio 
+              s3ForcePathStyle: true
+              s3Url: http://minio.velero-for-minio.svc:9000
+        schedules:
+          mybackup:
+            schedule: "0 0 * * *"
+
   destination:
     server: https://kubernetes.default.svc
     namespace: backup
@@ -26,3 +44,19 @@ spec:
       prune: true
     syncOptions:
     - CreateNamespace=true
+    template:
+      ttl: "240h"
+      storageLocation: default
+      includedNamespaces:
+      - mc-test
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: velero-for-minio-access-credential
+  namespace: velero
+type: Opaque
+data:
+  # read ./velero-for-minio-access-credential.md
+  credentials-velero: |
+    W2RlZmF1bHRdCmF3c19hY2Nlc3Nfa2V5X2lkID0gaWFtcm9vdHVzZXIKYXdzX3NlY3JldF9hY2Nlc3Nfa2V5ID0gdDBwLVNlY3JldAo=
