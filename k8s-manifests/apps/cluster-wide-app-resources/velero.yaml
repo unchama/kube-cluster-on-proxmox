@@ -58,5 +58,4 @@ metadata:
 type: Opaque
 data:
   # read ./velero-for-minio-access-credential.md
-  credentials-velero: |
-    W2RlZmF1bHRdCmF3c19hY2Nlc3Nfa2V5X2lkID0gaWFtcm9vdHVzZXIKYXdzX3NlY3JldF9hY2Nlc3Nfa2V5ID0gdDBwLVNlY3JldAo=
+  credentials-velero: W2RlZmF1bHRdCmF3c19hY2Nlc3Nfa2V5X2lkID0gaWFtcm9vdHVzZXIKYXdzX3NlY3JldF9hY2Nlc3Nfa2V5ID0gdDBwLVNlY3JldAo=
