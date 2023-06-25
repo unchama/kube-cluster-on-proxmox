@@ -24,6 +24,8 @@ spec:
       server: https://kubernetes.default.svc
     - namespace: 'backup'
       server: https://kubernetes.default.svc
+    - namespace: 'velero'
+      server: https://kubernetes.default.svc
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'
