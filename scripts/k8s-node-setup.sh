@@ -269,6 +269,12 @@ kubeadm config images pull
 # install k9s
 wget https://github.com/derailed/k9s/releases/download/v0.27.4/k9s_Linux_amd64.tar.gz -O - | tar -zxvf - k9s && sudo mv ./k9s /usr/local/bin/
 
+# install velero client
+VELERO_VERSION="v1.10.3"
+wget https://github.com/vmware-tanzu/velero/releases/download/${VELERO_VERSION}/velero-${VELERO_VERSION}-linux-amd64.tar.gz
+tar -xvf velero-${VELERO_VERSION}-linux-amd64.tar.gz
+sudo mv velero-${VELERO_VERSION}-linux-amd64/velero /usr/local/bin/
+
 # endregion
 
 # Ends except first-control-plane
