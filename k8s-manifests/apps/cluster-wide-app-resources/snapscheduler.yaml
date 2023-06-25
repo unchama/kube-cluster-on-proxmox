@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/backube/snapscheduler.git
     path: helm/snapscheduler/crds/
-    targetRevision: v3.1.0
+    targetRevision: v3.2.0
     directory:
       recurse: true
   destination:
