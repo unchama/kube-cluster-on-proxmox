@@ -28,7 +28,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
         - Service Network (172.16.3.0-172.16.3.127)
         - Storage Network (172.16.17.0-172.16.17.127)
       - API Endpoint (172.16.3.100)
-      - LoadBalancer VIP (172.16.3.128-172.16.3.255,172.16.17.128-172.16.17.255)
+      - LoadBalancer VIP (172.16.3.128-172.16.3.255)
 - kubernetes構成情報
   - [./deploy-vm.sh](./deploy-vm.sh)で導入しているもの
     - cloud-init templateの錬成

@@ -1,14 +1,19 @@
-apiVersion: v1
-kind: ConfigMap
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
 metadata:
+  name: default-pool
   namespace: metallb-system
-  name: config
-data:
-  config: |
-    address-pools:
-    - name: default
-      protocol: layer2
-      addresses:
-      - 172.16.3.128-172.16.3.255
-      - 172.16.17.128-172.16.17.255
-  
+spec:
+  addresses:
+  - 172.16.3.128-172.16.3.255
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: default-advertisement
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - default-pool
+  interfaces:
+  - ens18
