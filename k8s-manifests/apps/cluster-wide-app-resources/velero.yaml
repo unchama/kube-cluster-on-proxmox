@@ -26,15 +26,15 @@ spec:
             provider: aws
             accessMode: ReadWrite
             credential:
-              name: velero-for-minio-access-credential
+              name: minio-for-velero-access-credential
               key: cloud
             config:
               region: minio 
               s3ForcePathStyle: true
-              s3Url: http://minio.velero-for-minio.svc:9000
+              s3Url: http://minio.minio-for-velero.svc:9000
         credentials:
           useSecret: true
-          name: velero-for-minio-access-credential
+          name: minio-for-velero-access-credential
           secretContents:
             cloud: |
               [default]
