@@ -45,5 +45,5 @@ metadata:
   namespace: minio-for-velero
 type: Opaque
 data:
-  rootUser: iamrootuser
-  rootPassword: t0p-Secret
+  rootUser: aWFtcm9vdHVzZXI=
+  rootPassword: dDBwLVNlY3JldA==
