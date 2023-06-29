@@ -43,6 +43,7 @@ spec:
           create: true
           rules:
             kubeProxy: false
+            alertmanager: false
         grafana:
           defaultDashboardsTimezone: Asia/Tokyo
           plugins:
@@ -60,11 +61,6 @@ spec:
               cookie_secure: false
               strict_transport_security: true
               content_security_policy: true
-          securityContext:
-            runAsUser: 0
-            runAsGroup: 0
-            runAsNonRoot: false
-            fsGroup: 472
           deploymentStrategy:
             type: Recreate
           persistence:
@@ -93,24 +89,9 @@ spec:
             resources:
               requests:
                 memory: 2Gi
-            securityContext:
-              runAsGroup: 0
-              runAsNonRoot: false
-              runAsUser: 0
-              fsGroup: 2000
+            retention: 60d
         alertmanager:
-          alertmanagerSpec:
-            storage:
-              volumeClaimTemplate:
-                spec:
-                  resources:
-                    requests:
-                      storage: 20Gi
-            securityContext:
-              runAsGroup: 0
-              runAsNonRoot: false
-              runAsUser: 0
-              fsGroup: 2000
+          enabled: false
         kubeProxy:
           enabled: false
         kubeEtcd:
@@ -128,5 +109,6 @@ spec:
   syncPolicy:
     automated:
       prune: true
+      selfHeal: true
     syncOptions:
     - CreateNamespace=true
