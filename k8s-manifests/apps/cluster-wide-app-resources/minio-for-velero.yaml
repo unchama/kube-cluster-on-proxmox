@@ -17,6 +17,12 @@ spec:
         replicas: 1
         persistence:
           size: 5Gi
+        buckets:
+        - name: minio-for-velero
+          policy: none
+          purge: false
+          versioning: false
+          objectlocking: false
         DeploymentUpdate:
           type: Recreate
         resources:
