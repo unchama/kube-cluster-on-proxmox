@@ -16,6 +16,13 @@ spec:
       releaseName: velero
       # https://github.com/vmware-tanzu/helm-charts/blob/main/charts/velero/values.yaml
       values: |
+        initContainers:
+        - name: velero-plugin-for-aws
+          image: velero/velero-plugin-for-aws:v1.7.0
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /target
+              name: plugins
         metrics:
           serviceMonitor:
             enabled: true
