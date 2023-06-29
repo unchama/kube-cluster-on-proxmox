@@ -66,18 +66,6 @@ spec:
           persistence:
             enabled: true
             size: 10Gi
-          datasources:
-            datasources.yaml:
-              apiVersion: 1
-              datasources:
-                - name: Prometheus
-                  type: prometheus
-                  url: http://prometheus-kube-prometheus-prometheus:9090
-                  isDefault: true
-                - name: Loki
-                  type: loki
-                  url: http://loki:3100
-                  isDefault: false
         prometheus:
           prometheusSpec:
             storageSpec:
