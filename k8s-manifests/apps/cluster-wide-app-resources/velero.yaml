@@ -31,7 +31,7 @@ spec:
             config:
               region: minio 
               s3ForcePathStyle: true
-              s3Url: http://minio.minio-for-velero.svc:9000
+              s3Url: http://velero-backup-store-minio.minio-for-velero.svc:9000
         credentials:
           useSecret: true
           name: minio-for-velero-access-credential
