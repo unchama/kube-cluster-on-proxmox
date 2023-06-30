@@ -66,7 +66,7 @@ spec:
               - mc-test
   destination:
     server: https://kubernetes.default.svc
-    namespace: backup
+    namespace: velero
   syncPolicy:
     automated:
       prune: true
