@@ -40,6 +40,12 @@ spec:
               region: minio 
               s3ForcePathStyle: true
               s3Url: http://velero-backup-store-minio.minio-for-velero.svc:9000
+          volumeSnapshotLocation:
+          - name: default
+            provider: aws
+          defaultBackupStorageLocation: default
+          defaultVolumeSnapshotLocations: default
+          defaultVolumesToFsBackup: false
         credentials:
           useSecret: true
           name: minio-for-velero-access-credential
@@ -48,9 +54,11 @@ spec:
               [default]
               aws_access_key_id = iamrootuser
               aws_secret_access_key = t0p-Secret
+        backupsEnabled: true
+        snapshotsEnabled: true
         schedules:
-          mybackup:
-            schedule: "0 0 * * *"
+          mc-test-bkup:
+            schedule: "*/10 * * * *"
             template:
               ttl: "240h"
               storageLocation: default
