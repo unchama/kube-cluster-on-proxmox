@@ -51,7 +51,7 @@ spec:
             provider: csi
           defaultBackupStorageLocation: default
           defaultVolumeSnapshotLocations: csi:default
-          defaultVolumesToFsBackup: false
+          defaultVolumesToFsBackup: true
           features: EnableCSI
         credentials:
           useSecret: true
