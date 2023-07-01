@@ -40,8 +40,6 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: minecraft-server-data
-      labels:
-        "snapschedule/hourly": "enabled"
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
@@ -49,8 +47,6 @@ spec:
           storage: 10Gi
   - metadata:
       name: minecraft-server-plugins
-      labels:
-        "snapschedule/hourly": "enabled"
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
