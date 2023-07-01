@@ -78,7 +78,7 @@ spec:
           mc-test-bkup:
             schedule: "*/10 * * * *"
             template:
-              ttl: "240h"
+              ttl: "24h"
               storageLocation: default
               includedNamespaces:
               - mc-test
