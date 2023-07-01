@@ -4,4 +4,3 @@ namespace: mc-test
 resources:
   - minecraft-server.yaml
   - loadbalancer.yaml
-  - snapshot-schedule.yaml
