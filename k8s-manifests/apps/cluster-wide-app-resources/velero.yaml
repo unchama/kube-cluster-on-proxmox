@@ -63,6 +63,17 @@ spec:
               aws_secret_access_key = t0p-Secret
         backupsEnabled: true
         snapshotsEnabled: true
+        deployNodeAgent: true
+        nodeAgent:
+          podVolumePath: /var/lib/kubelet/pods
+          privileged: true
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
         schedules:
           mc-test-bkup:
             schedule: "*/10 * * * *"
