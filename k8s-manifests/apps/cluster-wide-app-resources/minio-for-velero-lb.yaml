@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-for-velero-lb
+  namespace: minio-for-velero
+spec:
+  ports:
+  - name: http
+    port: 9001
+    protocol: TCP
+    targetPort: 9001
+  selector:
+    app: minio
+    release: velero-backup-store
+  type: LoadBalancer
+  loadBalancerIP: 172.16.3.243
