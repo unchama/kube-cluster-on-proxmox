@@ -4,7 +4,6 @@ metadata:
   name: synology-iscsi-storage
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
-    velero.io/csi-volumesnapshot-class: "true"
 provisioner: csi.san.synology.com
 parameters:
   dsm: '172.16.15.245'
