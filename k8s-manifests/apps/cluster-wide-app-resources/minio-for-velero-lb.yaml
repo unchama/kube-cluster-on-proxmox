@@ -5,7 +5,13 @@ metadata:
   namespace: minio-for-velero
 spec:
   ports:
+  # S3エンドポイントはクラスタ内部のveleroからのアクセスに加えてクラスタ外に配置された
+  # velero-clientからもアクセスされるためクラスター外にも公開しておく必要がある
   - name: http
+    port: 9000
+    protocol: TCP
+    targetPort: 9000
+  - name: http-console
     port: 9001
     protocol: TCP
     targetPort: 9001

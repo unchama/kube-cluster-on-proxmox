@@ -45,7 +45,10 @@ spec:
             config:
               region: minio 
               s3ForcePathStyle: true
-              s3Url: http://velero-backup-store-minio.minio-for-velero.svc:9000
+              # 以下に指定するS3エンドポイントはクラスターネットワーク外に配置された
+              # velero-clientからもアクセスされるため
+              # クラスター外からもアクセス可能なURLを指定すること
+              s3Url: http://172.16.3.243:9000
           volumeSnapshotLocation:
           - name: default
             provider: csi
