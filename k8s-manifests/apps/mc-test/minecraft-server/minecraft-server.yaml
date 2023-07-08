@@ -9,7 +9,7 @@ spec:
     matchLabels:
       app: minecraft-server
   serviceName: "minecraft-server"
-  replicas: 1
+  replicas: 0
   template:
     metadata:
       labels:
