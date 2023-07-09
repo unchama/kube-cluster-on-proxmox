@@ -65,7 +65,8 @@ spec:
               aws_access_key_id = iamrootuser
               aws_secret_access_key = t0p-Secret
         backupsEnabled: true
-        snapshotsEnabled: true
+        # If use volume-snapshot on synology, set true
+        snapshotsEnabled: false
         deployNodeAgent: true
         nodeAgent:
           podVolumePath: /var/lib/kubelet/pods
