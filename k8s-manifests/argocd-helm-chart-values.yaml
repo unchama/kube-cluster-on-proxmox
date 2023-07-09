@@ -1,6 +1,6 @@
 # Config values for the ArgoCD Helm Chart.
-# For default values, see
-# https://github.com/argoproj/argo-helm/blob/07d63255ae19ff1e08a22e71c932f686f8f619ac/charts/argo-cd/values.yaml
+# For default values, see ( ver 5.36.10 )
+# https://github.com/argoproj/argo-helm/blob/argo-cd-5.36.10/charts/argo-cd/values.yaml
 server:
   autoscaling:
     enabled: true
@@ -22,12 +22,18 @@ server:
     minAvailable: 1
     maxUnavailable: 0
 
-  configEnabled: true
-  # -- [General Argo CD configuration]
-  config:
-    # Argo CD instance label key
+configs:
+  cm:
+    create: true
     application.instanceLabelKey: argocd.argoproj.io/instance
     kustomize.buildOptions: --load-restrictor LoadRestrictionsNone
+    resource.exclusions: |
+      - apiGroups:
+        - "velero.io"
+        kinds:
+        - Backup
+        clusters:
+        - "*"
 
 controller:
   enableStatefulSet: true
