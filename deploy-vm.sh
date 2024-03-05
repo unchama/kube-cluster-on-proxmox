@@ -8,7 +8,7 @@ CLOUDINIT_IMAGE_TARGET_VOLUME=local-lvm
 TEMPLATE_BOOT_IMAGE_TARGET_VOLUME=local-lvm
 BOOT_IMAGE_TARGET_VOLUME=local-lvm
 SNIPPET_TARGET_VOLUME=local
-SNIPPET_TARGET_PATH=/mnt/pve/${SNIPPET_TARGET_VOLUME}/snippets
+SNIPPET_TARGET_PATH=/var/lib/vz/snippets
 REPOSITORY_RAW_SOURCE_URL="https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/${TARGET_BRANCH}"
 VM_LIST=(
     # ---
