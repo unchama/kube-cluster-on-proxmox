@@ -102,41 +102,18 @@ spec:
             - name: dns.google
               url: dns.google
               module: icmp_v4
-            - name: uncahama-tst-prox01-service
-              url: 172.16.0.111
+            - name: sc-tst-proxmox-02-service
+              url: 172.16.0.112
               module: icmp_v4
-            - name: uncahama-tst-prox03-service
-              url: 172.16.0.113
+            - name: sc-tst-proxmox-02-storage
+              url: 172.16.16.112
               module: icmp_v4
-            - name: uncahama-tst-prox04-service
-              url: 172.16.0.114
-              module: icmp_v4
-            - name: uncahama-tst-prox01-storage
-              url: 172.16.16.111
-              module: icmp_v4
-            - name: uncahama-tst-prox03-storage
-              url: 172.16.16.113
-              module: icmp_v4
-            - name: uncahama-tst-prox04-storage
-              url: 172.16.16.114
-              module: icmp_v4
-            - name: uncahama-tst-prox01-service-web-panel
-              url: https://172.16.0.111:8006
+            - name: sc-tst-proxmox-02-service-web-panel
+              url: https://172.16.0.112:8006
               module: http_2xx_insecure
-            - name: uncahama-tst-prox03-service-web-panel
-              url: https://172.16.0.113:8006
+            - name: sc-tst-proxmox-02-storage-web-panel
+              url: https://172.16.16.112:8006
               module: http_2xx_insecure
-            - name: uncahama-tst-prox04-service-web-panel
-              url: https://172.16.0.114:8006
-              module: http_2xx_insecure
-            - name: uncahama-tst-prox01-storage-web-panel
-              url: https://172.16.16.111:8006
-              module: http_2xx_insecure
-            - name: uncahama-tst-prox03-storage-web-panel
-              url: https://172.16.16.113:8006
-              module: http_2xx_insecure
-            - name: uncahama-tst-prox04-storage-web-panel
-              url: https://172.16.16.114:8006
               module: http_2xx_insecure
             - name: mc-play-debug-seichi-click
               url: play-debug.seichi.click:25565

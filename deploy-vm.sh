@@ -4,10 +4,10 @@
 
 TARGET_BRANCH=$1
 TEMPLATE_VMID=9050
-CLOUDINIT_IMAGE_TARGET_VOLUME=tst-network-01-lun01
-TEMPLATE_BOOT_IMAGE_TARGET_VOLUME=tst-network-01-lun01
+CLOUDINIT_IMAGE_TARGET_VOLUME=local-lvm
+TEMPLATE_BOOT_IMAGE_TARGET_VOLUME=local-lvm
 BOOT_IMAGE_TARGET_VOLUME=local-lvm
-SNIPPET_TARGET_VOLUME=unchama-tst-prox-nfs01
+SNIPPET_TARGET_VOLUME=local
 SNIPPET_TARGET_PATH=/mnt/pve/${SNIPPET_TARGET_VOLUME}/snippets
 REPOSITORY_RAW_SOURCE_URL="https://raw.githubusercontent.com/unchama/kube-cluster-on-proxmox/${TARGET_BRANCH}"
 VM_LIST=(
@@ -22,12 +22,12 @@ VM_LIST=(
     # targethost: VMの配置先となるProxmoxホストのホスト名
     # ---
     #vmid #vmname      #cpu #mem  #vmsrvip    #vmsanip     #targetip    #targethost
-    "1001 unc-k8s-cp-1 2    8192  172.16.3.11 172.16.17.11 172.16.16.111 unchama-tst-prox01"
-    "1002 unc-k8s-cp-2 2    8192  172.16.3.12 172.16.17.12 172.16.16.113 unchama-tst-prox03"
-    "1003 unc-k8s-cp-3 2    8192  172.16.3.13 172.16.17.13 172.16.16.114 unchama-tst-prox04"
-    "1101 unc-k8s-wk-1 4    12288 172.16.3.21 172.16.17.21 172.16.16.111 unchama-tst-prox01"
-    "1102 unc-k8s-wk-2 4    12288 172.16.3.22 172.16.17.22 172.16.16.113 unchama-tst-prox03"
-    "1103 unc-k8s-wk-3 4    12288 172.16.3.23 172.16.17.23 172.16.16.114 unchama-tst-prox04"
+    "1001 unc-k8s-cp-1 2    8192  172.16.3.11 172.16.17.11 172.16.16.112 sc-tst-proxmox-02"
+    "1002 unc-k8s-cp-2 2    8192  172.16.3.12 172.16.17.12 172.16.16.112 sc-tst-proxmox-02"
+    "1003 unc-k8s-cp-3 2    8192  172.16.3.13 172.16.17.13 172.16.16.112 sc-tst-proxmox-02"
+    "1101 unc-k8s-wk-1 4    8192  172.16.3.21 172.16.17.21 172.16.16.112 sc-tst-proxmox-02"
+    "1102 unc-k8s-wk-2 4    8192  172.16.3.22 172.16.17.22 172.16.16.112 sc-tst-proxmox-02"
+    "1103 unc-k8s-wk-3 4    8192  172.16.3.23 172.16.17.23 172.16.16.112 sc-tst-proxmox-02"
 )
 
 # endregion
@@ -40,7 +40,7 @@ VM_LIST=(
 wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
 
 # create a new VM and attach Network Adaptor
-# vmbr0=Service Network Segment (172.16.0.0/20)
+# vmbr0=Service Network Segment (172.16.0.0/22)
 # vmbr1=Storage Network Segment (172.16.16.0/22)
 qm create $TEMPLATE_VMID --cores 2 --memory 4096 --net0 virtio,bridge=vmbr0 --net1 virtio,bridge=vmbr1 --name unc-k8s-cp-template
 
@@ -137,7 +137,7 @@ config:
     - type: static
       address: '${vmsrvip}'
       netmask: '255.255.240.0'
-      gateway: '172.16.15.254'
+      gateway: '172.16.3.254'
   - type: physical
     name: ens19
     subnets:
@@ -146,7 +146,7 @@ config:
       netmask: '255.255.252.0'
   - type: nameserver
     address:
-    - '172.16.15.254'
+    - '172.16.3.254'
     search:
     - 'local'
 EOF

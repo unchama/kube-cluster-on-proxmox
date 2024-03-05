@@ -17,7 +17,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
 - Ubuntu 22.04 LTS (cloud-init image)
   - kubernetes VMのベースとして使用
 - Network Addressing(うんちゃま自宅検証環境)
-  - Service Network Segment (172.16.0.0/20)
+  - Service Network Segment (172.16.0.0/22)
   - Storage Network Segment (172.16.16.0/22)
   - kubernetes
     - Internal
@@ -28,7 +28,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
         - Service Network (172.16.3.0-172.16.3.127)
         - Storage Network (172.16.17.0-172.16.17.127)
       - API Endpoint (172.16.3.100)
-      - LoadBalancer VIP (172.16.3.128-172.16.3.255)
+      - LoadBalancer VIP (172.16.3.128-172.16.3.253)
 - kubernetes構成情報
   - [./deploy-vm.sh](./deploy-vm.sh)で導入しているもの
     - cloud-init templateの錬成
@@ -254,37 +254,23 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
 
     ```sh
     # stop vm
-    ## on unchama-tst-prox01
-    ssh 172.16.0.111 qm stop 1001
-    ssh 172.16.0.111 qm stop 1101
-
-    ## on unchama-tst-prox03
-    ssh 172.16.0.113 qm stop 1002
-    ssh 172.16.0.113 qm stop 1102
-
-    ## on unchama-tst-prox04
-    ssh 172.16.0.114 qm stop 1003
-    ssh 172.16.0.114 qm stop 1103
+    ## on sc-tst-proxmox-02
+    ssh 172.16.0.112 qm stop 1001
+    ssh 172.16.0.112 qm stop 1101
+    ssh 172.16.0.112 qm stop 1002
+    ssh 172.16.0.112 qm stop 1102
+    ssh 172.16.0.112 qm stop 1003
+    ssh 172.16.0.112 qm stop 1103
 
     # delete vm
-    ## on unchama-tst-prox01
-    ssh 172.16.0.111 qm destroy 1001 --destroy-unreferenced-disks true --purge true
-    ssh 172.16.0.111 qm destroy 1101 --destroy-unreferenced-disks true --purge true
-    ssh 172.16.0.111 qm destroy 9050 --destroy-unreferenced-disks true --purge true
-
-    ## wait due to prevent to cluster-data mismatch on proxmox
-    sleep 20s
-
-    ## on unchama-tst-prox03
-    ssh 172.16.0.113 qm destroy 1002 --destroy-unreferenced-disks true --purge true
-    ssh 172.16.0.113 qm destroy 1102 --destroy-unreferenced-disks true --purge true
-
-    ## wait due to prevent to cluster-data mismatch on proxmox
-    sleep 20s
-
-    ## on unchama-tst-prox04
-    ssh 172.16.0.114 qm destroy 1003 --destroy-unreferenced-disks true --purge true
-    ssh 172.16.0.114 qm destroy 1103 --destroy-unreferenced-disks true --purge true
+    ## on sc-tst-proxmox-02
+    ssh 172.16.0.112 qm destroy 1001 --destroy-unreferenced-disks true --purge true
+    ssh 172.16.0.112 qm destroy 1101 --destroy-unreferenced-disks true --purge true
+    ssh 172.16.0.112 qm destroy 9050 --destroy-unreferenced-disks true --purge true
+    ssh 172.16.0.112 qm destroy 1002 --destroy-unreferenced-disks true --purge true
+    ssh 172.16.0.112 qm destroy 1102 --destroy-unreferenced-disks true --purge true
+    ssh 172.16.0.112 qm destroy 1003 --destroy-unreferenced-disks true --purge true
+    ssh 172.16.0.112 qm destroy 1103 --destroy-unreferenced-disks true --purge true
     ```
 
 ## クラスタの削除後、クラスタの再作成に失敗する場合
@@ -302,7 +288,7 @@ Proxmox環境でサクッと作ってサクっと壊せる高可用性なkuberne
     1. その後、**proxmoxをホストしている物理マシンのターミナル上で**次のコマンドを実行し、残ったデバイスを削除します。
 
         ```sh
-        for host in 172.16.0.111 172.16.0.113 172.16.0.114 ; do
+        for host in 172.16.0.112 ; do
           ssh $host dmsetup remove vg01-vm--1101--cloudinit
           ssh $host dmsetup remove vg01-vm--1102--cloudinit
           ssh $host dmsetup remove vg01-vm--1103--cloudinit
