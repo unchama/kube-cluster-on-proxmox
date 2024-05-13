@@ -10,7 +10,7 @@ spec:
   source:
     chart: prometheus-blackbox-exporter
     repoURL: https://prometheus-community.github.io/helm-charts
-    targetRevision: 7.10.0
+    targetRevision: 8.17.0
     helm:
       releaseName: prometheus-blackbox-exporter
       # https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-blackbox-exporter/values.yaml
