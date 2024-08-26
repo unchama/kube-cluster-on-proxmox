@@ -24,7 +24,7 @@ spec:
             - mountPath: /target
               name: plugins
         - name: velero-plugin-for-aws
-          image: velero/velero-plugin-for-aws:v1.7.0
+          image: velero/velero-plugin-for-aws:v1.10.1
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - mountPath: /target
